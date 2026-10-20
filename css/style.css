@@ -38,23 +38,23 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:va
 .nav .btn{padding:.55rem 1.1rem;font-size:.92rem}
 .burger{display:none;background:none;border:1px solid rgba(232,181,58,.5);color:var(--gold);border-radius:6px;padding:.4rem .6rem;font-size:1.1rem;cursor:pointer}
 
-/* hero */
-.hero{background:radial-gradient(120% 140% at 85% 20%,var(--navy-700) 0%,var(--navy-900) 60%);color:var(--on-navy);overflow:hidden;position:relative}
+/* hero: foto satpam sebagai latar, gradasi navy dari kiri agar teks terbaca */
+.hero{position:relative;overflow:hidden;color:var(--on-navy);background-color:var(--navy-900);
+  background-image:
+    linear-gradient(90deg,rgba(11,26,51,.97) 0%,rgba(11,26,51,.88) 35%,rgba(11,26,51,.45) 62%,rgba(11,26,51,.05) 85%),
+    linear-gradient(0deg,rgba(11,26,51,.85) 0%,rgba(11,26,51,0) 30%),
+    url("../assets/hero-bg.jpg");
+  background-size:cover;background-position:right center;background-repeat:no-repeat}
 .hero::after{content:"";position:absolute;inset:auto 0 0 0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
-.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:2.5rem;align-items:center;padding-block:4rem 0}
-.hero-text{padding-bottom:4rem;min-width:0}
-.hero h1{font-size:clamp(2.6rem,6vw,4.4rem);font-weight:800;color:var(--white);letter-spacing:.01em}
+.hero-grid{display:block;padding-block:5.5rem 7rem;min-height:560px}
+.hero-text{max-width:700px;min-width:0}
+.hero h1{font-size:clamp(2.6rem,6vw,4.4rem);font-weight:800;color:var(--white);letter-spacing:.01em;text-shadow:0 2px 18px rgba(0,0,0,.35)}
 .hero h1 span{display:block;color:var(--gold);font-size:.58em;font-weight:700;margin-top:.4rem}
-.hero p.lead{max-width:34em;color:var(--on-navy-muted);font-size:1.1rem;margin:1.2rem 0 1.8rem}
+.hero p.lead{max-width:34em;color:#d3dcec;font-size:1.1rem;margin:1.2rem 0 1.8rem}
 .cta{display:flex;flex-wrap:wrap;gap:.8rem}
 .pillars{display:flex;flex-wrap:wrap;gap:1.4rem;margin-top:2.2rem;padding:0;list-style:none}
 .pillars li{display:flex;align-items:center;gap:.6rem;font-weight:600;font-size:.95rem}
 .pillars svg{width:38px;height:38px;flex:none}
-.hero-photo{align-self:end;position:relative;max-width:100%}
-.hero-photo img{display:block;width:100%;border-radius:14px 14px 0 0;-webkit-mask-image:linear-gradient(180deg,#000 75%,transparent);mask-image:linear-gradient(180deg,#000 75%,transparent)}
-.badge-float{position:absolute;left:-1rem;bottom:2.5rem;background:var(--white);color:var(--ink);border-radius:10px;padding:.7rem 1rem;box-shadow:0 12px 30px rgba(5,12,28,.35);display:flex;gap:.7rem;align-items:center}
-.badge-float b{font-family:var(--f-display);font-size:1.6rem;color:var(--navy-800);line-height:1}
-.badge-float small{color:var(--muted);font-size:.8rem;line-height:1.2}
 
 /* stats */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--white);border:1px solid var(--line);border-radius:12px;margin-top:-1px;transform:translateY(-50%);box-shadow:0 14px 40px rgba(17,36,71,.12)}
@@ -140,10 +140,23 @@ footer a:hover{color:var(--gold)}
   .menu a{display:block;padding:.6rem 0}
   .burger{display:block}
   .nav .btn{display:none}
-  .hero-grid{grid-template-columns:1fr;padding-top:2.5rem}
-  .hero-text{padding-bottom:0}
-  .hero-photo{max-width:440px;margin:0 auto}
-  .badge-float{left:0}
+  /* HP: sama seperti komputer — foto di belakang, satpam di kanan, tulisan kecil di kiri */
+  .hero{background-position:84% center;background-size:cover;
+    background-image:
+      linear-gradient(90deg,rgba(11,26,51,.96) 0%,rgba(11,26,51,.85) 38%,rgba(11,26,51,.4) 62%,rgba(11,26,51,.05) 85%),
+      linear-gradient(0deg,rgba(11,26,51,.85) 0%,rgba(11,26,51,0) 22%),
+      url("../assets/hero-bg.jpg")}
+  .hero-grid{padding-block:6vw 13vw;min-height:0}
+  .hero-text{max-width:60%}
+  .hero .eyebrow{font-size:clamp(.5rem,2.3vw,.85rem);letter-spacing:.1em}
+  .hero h1{font-size:clamp(1.5rem,7.6vw,3.4rem);margin-top:.15rem}
+  .hero h1 span{font-size:.56em;margin-top:.25rem}
+  .hero p.lead{font-size:clamp(.62rem,2.9vw,1rem);line-height:1.45;margin:.6rem 0 .9rem;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+  .cta{gap:.4rem;flex-wrap:nowrap}
+  .cta .btn{padding:.45rem .7rem;font-size:clamp(.6rem,2.9vw,1rem);border-radius:6px;border-width:1.5px;white-space:nowrap}
+  .pillars{gap:.35rem .8rem;margin-top:.9rem}
+  .pillars li{gap:.35rem;font-size:clamp(.55rem,2.5vw,.9rem);text-shadow:0 1px 6px rgba(0,0,0,.7)}
+  .pillars svg{width:clamp(16px,5.5vw,32px);height:clamp(16px,5.5vw,32px)}
   .stats{grid-template-columns:1fr 1fr;transform:translateY(-1.5rem)}
   .stat:nth-child(2){border-right:0}
   .stat:nth-child(-n+2){border-bottom:1px solid var(--line)}
