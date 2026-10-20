@@ -53,6 +53,8 @@
           </div>
         </div>
       </section>
+
+      <section class="card" id="pengaturanAbsen"></section>
     </main>
   </div>
 </div>
@@ -71,6 +73,7 @@
     document.getElementById('loading').hidden = true;
     document.getElementById('app').hidden = false;
 
+    mulaiPengaturanAbsen({ wadah: document.getElementById('pengaturanAbsen') });
     mulaiPengajuanPengurus({ wadah: document.getElementById('pengajuan'), saatJumlah: (n) => setBadgeMenu('absensi', n) });
     const beda = (n) => (n > 0 ? '+' + n : n < 0 ? String(n) : '±0') + ' dari kemarin';
     mulaiAbsensiPengurus({
