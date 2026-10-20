@@ -2,7 +2,7 @@
 // Pakai: mulaiDataAnggota({ wadah: elemenKartu, saatData: (ringkasan) => {...} })
 
 function mulaiDataAnggota({ wadah, saatData }) {
-  const JABATAN = { ketua: 'Ketua', sekretaris: 'Sekretaris', bendahara: 'Bendahara', anggota: 'Anggota' };
+  const JABATAN = { admin: 'Admin', ketua: 'Ketua', sekretaris: 'Sekretaris', bendahara: 'Bendahara', anggota: 'Anggota' };
   const POSISI = { satpam: 'Satpam', anggota: 'Anggota' };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const tglPendek = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';

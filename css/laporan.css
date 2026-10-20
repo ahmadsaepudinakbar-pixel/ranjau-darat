@@ -1,5 +1,6 @@
 /* Laporan Keuangan — tampilan layar & cetak */
-.kertas{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:2rem 2.2rem;display:grid;gap:1.5rem;min-width:0}
+.kertas{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:2rem 2.2rem;display:grid;grid-template-columns:minmax(0,1fr);gap:1.5rem;min-width:0}
+.kertas > *{min-width:0}
 .kertas .kosong{padding:2rem 1rem}
 .kop{text-align:center;border-bottom:3px double var(--navy-900);padding-bottom:1rem}
 .kop h2{margin:0;font-family:var(--f-display);font-size:1.9rem;letter-spacing:.03em;color:var(--navy-900)}
