@@ -57,10 +57,11 @@ button{font:inherit}
 .welcome p{margin:.1rem 0 0;color:var(--muted)}
 
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
-.stat{border-radius:12px;padding:1.05rem 1.1rem;display:grid;grid-template-columns:auto 1fr;gap:.2rem .8rem;align-items:center;border:1px solid transparent}
+.stat{border-radius:12px;padding:1.05rem 1.1rem;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.2rem .8rem;align-items:center;border:1px solid transparent}
 .stat .ic{grid-row:span 3;width:44px;height:44px;border-radius:10px;display:grid;place-items:center;color:#fff}
 .stat .ic svg{width:22px;height:22px}
 .stat .lbl{font-size:.85rem;font-weight:700}
+.stat > *{min-width:0;overflow-wrap:anywhere}
 .stat b{font-family:var(--f-display);font-size:2rem;line-height:1;color:var(--navy-900);font-variant-numeric:tabular-nums}
 .stat small{color:var(--muted);font-size:.8rem}
 .s-info{background:var(--info-soft);border-color:#cfdcf6}.s-info .ic{background:var(--info)}.s-info .lbl{color:var(--info)}
@@ -104,5 +105,5 @@ button{font:inherit}
   .chip{margin-left:auto}
   .content{padding:1rem max(16px,env(safe-area-inset-right,0px)) 2rem max(16px,env(safe-area-inset-left,0px))}
 }
-@media (max-width:420px){ .stat b{font-size:1.6rem} .stat{padding:.85rem} .stat .ic{width:38px;height:38px} }
+@media (max-width:420px){ .stat b{font-size:1.6rem} .stat b[style]{font-size:1.15rem!important} .stat{grid-template-columns:1fr} .stat .ic{grid-row:auto;width:34px;height:34px} .stat{padding:.85rem} .stat .ic{width:38px;height:38px} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}

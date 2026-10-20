@@ -1,0 +1,71 @@
+/* Fitur Gaji (Bendahara & Anggota) */
+.rp{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.tbl th.rp{text-align:right}
+.tbl td.tot{font-weight:700;color:var(--navy-900)}
+.tbl td.min{color:var(--bad)}
+.tbl tbody tr.tidak-klik{cursor:default}
+.aksi-sel{display:flex;gap:.35rem;justify-content:flex-end}
+.periode{display:flex;align-items:center;gap:.4rem;font-weight:600;font-size:.9rem;color:var(--muted)}
+.periode input{font:inherit;font-size:.92rem;padding:.45rem .6rem;border:1px solid #cfd6e3;border-radius:8px;background:var(--white);color:var(--ink)}
+
+.belum{margin-top:1rem;background:var(--warn-soft);border:1px solid #f3dca2;border-radius:10px;padding:.8rem 1rem}
+.belum h3{margin:0 0 .5rem;font-size:.95rem;color:var(--warn)}
+.belum ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
+.belum li button{background:var(--white);border:1px solid #f0d199;border-radius:99px;padding:.3rem .75rem;font-weight:600;font-size:.86rem;color:var(--ink);cursor:pointer}
+.belum li button:hover{border-color:var(--gold-deep)}
+.belum li button::before{content:"+ ";color:var(--gold-deep)}
+
+/* Formulir slip */
+.slip-form{display:grid;gap:.9rem}
+.slip-form .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem}
+.f{display:grid;gap:.3rem;min-width:0}
+.f label{font-weight:600;font-size:.9rem}
+.f i{color:var(--bad);font-style:normal}
+.f input,.f select,.f textarea{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:#fbfcfe;border:1px solid #cfd6e3;border-radius:8px;padding:.6rem .75rem}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--gold-deep);box-shadow:0 0 0 3px rgba(232,181,58,.25);background:#fff}
+.f [aria-invalid="true"]{border-color:var(--bad);background:#fff8f7}
+.f .err{color:var(--bad);font-size:.82rem;font-weight:600}
+.f .err:empty{display:none}
+.f .hint{color:var(--muted);font-size:.8rem}
+.uang{position:relative}
+.uang span{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600;font-size:.9rem;pointer-events:none}
+.uang input{padding-left:2.4rem;text-align:right;font-variant-numeric:tabular-nums}
+.total-box{display:flex;justify-content:space-between;align-items:center;background:var(--navy-900);color:#fff;border-radius:10px;padding:.85rem 1.1rem}
+.total-box span{color:var(--on-navy-muted);font-weight:600}
+.total-box b{font-family:var(--f-display);font-size:1.7rem;color:var(--gold);font-variant-numeric:tabular-nums}
+.total-box.minus b{color:#ff9d92}
+.form-alert{margin:0;padding:.7rem .9rem;border-radius:8px;background:var(--bad-soft);color:var(--bad);font-weight:600;font-size:.9rem}
+
+/* Slip (tampilan untuk anggota & detail) */
+.slip{display:grid;gap:.15rem}
+.slip .row{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px dashed var(--line);font-size:.95rem}
+.slip .row span{color:var(--muted)}
+.slip .row b{font-variant-numeric:tabular-nums}
+.slip .row.minus b{color:var(--bad)}
+.slip .row.total{border-bottom:0;border-top:2px solid var(--navy-900);margin-top:.3rem;padding-top:.7rem}
+.slip .row.total span{color:var(--navy-900);font-weight:700}
+.slip .row.total b{font-family:var(--f-display);font-size:1.5rem;color:var(--navy-900)}
+
+/* Riwayat gaji anggota */
+.gaji-terbaru{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:1.4rem;align-items:start}
+.gt-kartu{background:linear-gradient(160deg,var(--navy-800),var(--navy-950));color:#fff;border-radius:12px;padding:1.2rem 1.3rem;display:grid;gap:.25rem}
+.gt-kartu small{color:var(--on-navy-muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.75rem}
+.gt-kartu b{font-family:var(--f-display);font-size:2.3rem;color:var(--gold);line-height:1.05;font-variant-numeric:tabular-nums}
+.gt-kartu p{margin:.2rem 0 0;color:var(--on-navy);font-size:.95rem}
+.riwayat{list-style:none;margin:1.2rem 0 0;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.riwayat li + li{border-top:1px solid var(--line)}
+.riwayat details summary{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:1rem;align-items:center;padding:.8rem 1rem;cursor:pointer;list-style:none}
+.riwayat details summary::-webkit-details-marker{display:none}
+.riwayat details summary::after{content:"▾";color:var(--muted);transition:transform .15s}
+.riwayat details[open] summary::after{transform:rotate(180deg)}
+.riwayat details[open] summary{background:var(--paper)}
+.riwayat .per b{display:block;color:var(--navy-900)}
+.riwayat .per small{color:var(--muted)}
+.riwayat .nom{font-weight:700;font-variant-numeric:tabular-nums;color:var(--navy-900)}
+.riwayat .slip{padding:.4rem 1rem 1rem}
+.kosong{color:var(--muted);text-align:center;padding:1.5rem 1rem;margin:0}
+
+@media (max-width:760px){
+  .slip-form .grid{grid-template-columns:1fr}
+  .gaji-terbaru{grid-template-columns:1fr}
+}
