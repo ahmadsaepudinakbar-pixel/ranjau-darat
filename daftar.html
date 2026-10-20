@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar Anggota - CV. Ranjau Darat</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/daftar.css">
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="Logo CV. Ranjau Darat">
+      <span><b>CV. RANJAU DARAT</b><small>SATPAM &amp; ADMINISTRASI</small></span>
+    </a>
+    <button class="burger" id="burger" aria-label="Buka menu" aria-expanded="false">☰</button>
+    <ul class="menu" id="menu">
+      <li><a href="index.html">Beranda</a></li>
+      <li><a href="index.html#profil">Profil</a></li>
+      <li><a href="index.html#layanan">Layanan</a></li>
+      <li><a href="index.html#pengumuman">Pengumuman</a></li>
+      <li><a href="index.html#kontak">Kontak</a></li>
+    </ul>
+    <a class="btn btn-gold" href="login.html">Login Sistem</a>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="eyebrow">Pendaftaran Anggota</div>
+    <h1>Formulir Pendaftaran Anggota</h1>
+    <p>Isi data sesuai KTP. Setelah dikirim, pendaftaran Anda akan diperiksa oleh Ketua atau Sekretaris. Anda bisa login setelah pendaftaran disetujui.</p>
+  </div>
+</section>
+
+<main class="wrap form-wrap">
+  <form id="daftarForm" class="reg" novalidate>
+
+    <div class="grid-2">
+      <!-- DATA PRIBADI -->
+      <fieldset class="panel">
+        <legend><span class="no">1</span>Data Pribadi</legend>
+
+        <div class="f">
+          <label for="nama">Nama Lengkap <i>*</i></label>
+          <input id="nama" name="nama" type="text" placeholder="Masukkan nama lengkap" autocomplete="name" required>
+          <small class="err"></small>
+        </div>
+
+        <div class="f">
+          <label for="nik">NIK <i>*</i></label>
+          <input id="nik" name="nik" type="text" inputmode="numeric" maxlength="16" placeholder="16 digit sesuai KTP" required>
+          <small class="hint" id="nikCount">0 / 16 digit</small>
+          <small class="err"></small>
+        </div>
+
+        <div class="row-2">
+          <div class="f">
+            <label for="tempat">Tempat Lahir <i>*</i></label>
+            <input id="tempat" name="tempat_lahir" type="text" placeholder="Kota kelahiran" required>
+            <small class="err"></small>
+          </div>
+          <div class="f">
+            <label for="tgl">Tanggal Lahir <i>*</i></label>
+            <input id="tgl" name="tanggal_lahir" type="date" required>
+            <small class="err"></small>
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="f">
+            <label for="jk">Jenis Kelamin <i>*</i></label>
+            <select id="jk" name="jenis_kelamin" required>
+              <option value="" selected disabled>Pilih jenis kelamin</option>
+              <option value="L">Laki-laki</option>
+              <option value="P">Perempuan</option>
+            </select>
+            <small class="err"></small>
+          </div>
+          <div class="f">
+            <label for="jabatan">Jabatan <i>*</i></label>
+            <select id="jabatan" name="jabatan" required>
+              <option value="" selected disabled>Pilih jabatan</option>
+              <option value="anggota">Anggota</option>
+              <option value="satpam">Satpam</option>
+            </select>
+            <small class="err"></small>
+          </div>
+        </div>
+
+        <div class="f">
+          <label for="wa">Nomor WhatsApp <i>*</i></label>
+          <input id="wa" name="no_wa" type="tel" inputmode="tel" placeholder="Contoh: 081234567890" autocomplete="tel" required>
+          <small class="err"></small>
+        </div>
+      </fieldset>
+
+      <!-- DATA ALAMAT -->
+      <fieldset class="panel">
+        <legend><span class="no">2</span>Data Alamat</legend>
+
+        <div class="f">
+          <label for="alamat">Alamat Lengkap <i>*</i></label>
+          <textarea id="alamat" name="alamat" rows="3" placeholder="Nama jalan, gang, nomor rumah, atau nama dusun" required></textarea>
+          <small class="err"></small>
+        </div>
+
+        <div class="row-2 keep">
+          <div class="f">
+            <label for="rt">RT <i>*</i></label>
+            <input id="rt" name="rt" type="text" inputmode="numeric" maxlength="3" placeholder="001" required>
+            <small class="err"></small>
+          </div>
+          <div class="f">
+            <label for="rw">RW <i>*</i></label>
+            <input id="rw" name="rw" type="text" inputmode="numeric" maxlength="3" placeholder="002" required>
+            <small class="err"></small>
+          </div>
+        </div>
+
+        <div class="f">
+          <label for="desa">Kelurahan / Desa <i>*</i></label>
+          <input id="desa" name="desa" type="text" placeholder="Masukkan kelurahan atau desa" required>
+          <small class="err"></small>
+        </div>
+
+        <div class="f">
+          <label for="kec">Kecamatan <i>*</i></label>
+          <input id="kec" name="kecamatan" type="text" placeholder="Masukkan kecamatan" required>
+          <small class="err"></small>
+        </div>
+
+        <div class="f">
+          <label for="kab">Kabupaten / Kota <i>*</i></label>
+          <input id="kab" name="kabupaten" type="text" placeholder="Masukkan kabupaten atau kota" required>
+          <small class="err"></small>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="grid-2">
+      <!-- UPLOAD DOKUMEN -->
+      <fieldset class="panel">
+        <legend><span class="no">3</span>Upload Dokumen</legend>
+        <p class="note">Format JPG atau PNG, maksimal 2 MB per file. Pastikan foto jelas dan tidak buram.</p>
+
+        <div class="uploads">
+          <div class="f">
+            <span class="lbl">Pas Foto <i>*</i></span>
+            <label class="drop" for="foto">
+              <img id="fotoPrev" alt="" hidden>
+              <span class="ph" id="fotoPh">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+                <b>Pilih pas foto</b><span>Latar polos, wajah terlihat jelas</span>
+              </span>
+            </label>
+            <input id="foto" name="foto" type="file" accept="image/jpeg,image/png" class="file" required>
+            <small class="fname" id="fotoName"></small>
+            <small class="err"></small>
+          </div>
+
+          <div class="f">
+            <span class="lbl">Foto KTP <i>*</i></span>
+            <label class="drop wide" for="ktp">
+              <img id="ktpPrev" alt="" hidden>
+              <span class="ph" id="ktpPh">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8" cy="11" r="2.2"/><path d="M5 16c.6-1.5 1.7-2.3 3-2.3s2.4.8 3 2.3M14 10h5M14 13h4"/></svg>
+                <b>Pilih foto KTP</b><span>Seluruh kartu terlihat, tulisan terbaca</span>
+              </span>
+            </label>
+            <input id="ktp" name="ktp" type="file" accept="image/jpeg,image/png" class="file" required>
+            <small class="fname" id="ktpName"></small>
+            <small class="err"></small>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- AKUN LOGIN -->
+      <fieldset class="panel">
+        <legend><span class="no">4</span>Akun Login</legend>
+        <p class="note">Dipakai untuk masuk ke sistem setelah pendaftaran disetujui.</p>
+
+        <div class="f">
+          <label for="username">Username <i>*</i></label>
+          <input id="username" name="username" type="text" placeholder="Contoh: budi.santoso" autocomplete="username" maxlength="20" required>
+          <small class="hint">4–20 karakter: huruf kecil, angka, titik, atau garis bawah. Tanpa spasi.</small>
+          <small class="err"></small>
+        </div>
+
+        <div class="f">
+          <label for="pass">Password <i>*</i></label>
+          <div class="pw">
+            <input id="pass" name="password" type="password" placeholder="Minimal 8 karakter" autocomplete="new-password" required>
+            <button type="button" class="peek" data-for="pass">Lihat</button>
+          </div>
+          <small class="err"></small>
+        </div>
+
+        <div class="f">
+          <label for="pass2">Ulangi Password <i>*</i></label>
+          <div class="pw">
+            <input id="pass2" name="password2" type="password" placeholder="Ketik ulang password" autocomplete="new-password" required>
+            <button type="button" class="peek" data-for="pass2">Lihat</button>
+          </div>
+          <small class="err"></small>
+        </div>
+
+        <label class="check">
+          <input id="setuju" type="checkbox" required>
+          <span>Saya menyatakan data yang saya isi benar dan sesuai KTP.</span>
+        </label>
+        <small class="err" id="setujuErr"></small>
+      </fieldset>
+    </div>
+
+    <p class="alert" id="alert" hidden></p>
+
+    <div class="actions">
+      <a class="btn btn-line" href="index.html">Batal</a>
+      <button class="btn btn-gold" type="submit" id="kirim">Kirim Pendaftaran</button>
+    </div>
+  </form>
+
+  <!-- Tampil setelah pendaftaran berhasil dikirim -->
+  <section class="done" id="done" hidden>
+    <div class="done-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h2>Pendaftaran terkirim</h2>
+    <p>Terima kasih, <b id="doneNama"></b>. Data Anda sedang diperiksa oleh Ketua atau Sekretaris. Status pendaftaran: <span class="st">Menunggu</span></p>
+    <p>Setelah disetujui, Anda bisa login dengan username <b id="doneUser"></b>.</p>
+    <div class="actions center">
+      <a class="btn btn-line" href="index.html">Ke Beranda</a>
+      <a class="btn btn-gold" href="login.html?role=anggota">Ke Halaman Login</a>
+    </div>
+  </section>
+</main>
+
+<footer class="mini">
+  <div class="wrap"><div class="copy">© <span class="yr">2026</span> CV. RANJAU DARAT. Semua Hak Dilindungi.</div></div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/daftar.js"></script>
+</body>
+</html>
