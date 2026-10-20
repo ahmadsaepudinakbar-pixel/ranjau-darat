@@ -21,7 +21,7 @@ const MENU = {
     ['dashboard', 'Dashboard', 'ketua.html'],
     ['pendaftaran', 'Pendaftaran', 'ketua.html#pendaftaran'],
     ['anggota', 'Data Anggota', ''],
-    ['absensi', 'Absensi', ''],
+    ['absensi', 'Absensi', 'absensi.html'],
     ['keuangan', 'Keuangan', ''],
     ['laporan', 'Laporan', ''],
     ['pengaturan', 'Pengaturan', '']
@@ -31,7 +31,7 @@ const MENU = {
     ['pendaftaran', 'Pendaftaran', 'sekretaris.html#pendaftaran'],
     ['anggota', 'Data Anggota', ''],
     ['surat', 'Surat & Dokumen', ''],
-    ['absensi', 'Absensi', ''],
+    ['absensi', 'Absensi', 'absensi.html'],
     ['laporan', 'Laporan', ''],
     ['pengaturan', 'Pengaturan', '']
   ],
@@ -45,7 +45,7 @@ const MENU = {
   anggota: [
     ['dashboard', 'Dashboard', 'anggota.html'],
     ['profil', 'Profil Saya', 'anggota.html#profil'],
-    ['absensi', 'Absensi', ''],
+    ['absensi', 'Absensi', 'anggota.html#absensi'],
     ['gaji', 'Gaji', 'anggota.html#gaji']
   ]
 };

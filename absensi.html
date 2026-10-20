@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Absensi Satpam - CV. Ranjau Darat</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="css/dash.css">
+<link rel="stylesheet" href="css/pendaftaran.css">
+<link rel="stylesheet" href="css/gaji.css">
+<link rel="stylesheet" href="css/absensi.css">
+</head>
+<body>
+<p class="loading-page" id="loading">Memeriksa akun...</p>
+
+<div class="shell" id="app" hidden>
+  <aside class="side" id="side"></aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 id="judul">Absensi Satpam</h1>
+      <span class="tgl" id="tgl"></span>
+      <div class="chip" id="chip"></div>
+    </header>
+
+    <main class="content">
+      <section class="card" id="absensi"></section>
+
+      <section aria-labelledby="rekapJudul">
+        <h2 id="rekapJudul" style="font-family:var(--f-display);font-size:1.4rem;color:var(--navy-900);margin:0 0 .7rem">Rekap Absensi <span id="rekapTgl" style="color:var(--muted);font-size:1.05rem"></span></h2>
+        <div class="stats">
+          <div class="stat s-ok">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+            <span class="lbl">Hadir</span><b data-r="hadir">–</b><small data-d="hadir">&nbsp;</small>
+          </div>
+          <div class="stat s-info">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6"/></svg></div>
+            <span class="lbl">Izin</span><b data-r="izin">–</b><small data-d="izin">&nbsp;</small>
+          </div>
+          <div class="stat s-warn">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z"/></svg></div>
+            <span class="lbl">Sakit</span><b data-r="sakit">–</b><small data-d="sakit">&nbsp;</small>
+          </div>
+          <div class="stat s-bad">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>
+            <span class="lbl" data-lbl-alpha>Alpha</span><b data-r="alpha">–</b><small data-d="alpha">&nbsp;</small>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/sesi.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/absensi.js"></script>
+<script>
+  wajibLogin(['ketua', 'sekretaris']).then((akun) => {
+    if (!akun) return;
+    const peran = ['ketua', 'sekretaris'].includes(akun.jabatan) ? akun.jabatan : 'ketua';
+    pasangLayout({ peran, aktif: 'absensi', judul: 'Absensi Satpam', akun });
+    document.getElementById('loading').hidden = true;
+    document.getElementById('app').hidden = false;
+
+    const beda = (n) => (n > 0 ? '+' + n : n < 0 ? String(n) : '±0') + ' dari kemarin';
+    mulaiAbsensiPengurus({
+      wadah: document.getElementById('absensi'),
+      saatData: ({ tanggal, lalu, hariIni, kemarin }) => {
+        document.getElementById('rekapTgl').textContent = '· ' + tglPanjangA(tanggal);
+        const alpha = lalu ? hariIni.alpha : hariIni.alpha + hariIni.belum;
+        document.querySelector('[data-lbl-alpha]').textContent = lalu ? 'Alpha' : 'Alpha / Belum absen';
+        const nilai = { hadir: hariIni.hadir, izin: hariIni.izin, sakit: hariIni.sakit, alpha };
+        const kmr = { hadir: kemarin.hadir, izin: kemarin.izin, sakit: kemarin.sakit, alpha: kemarin.alpha + kemarin.belum };
+        Object.keys(nilai).forEach((k) => {
+          document.querySelector('[data-r="' + k + '"]').textContent = nilai[k];
+          document.querySelector('[data-d="' + k + '"]').textContent = beda(nilai[k] - kmr[k]);
+        });
+      }
+    });
+  });
+</script>
+</body>
+</html>

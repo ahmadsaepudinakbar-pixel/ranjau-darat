@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="css/dash.css">
 <link rel="stylesheet" href="css/gaji.css">
+<link rel="stylesheet" href="css/pendaftaran.css">
+<link rel="stylesheet" href="css/absensi.css">
 <style>
   .profil{display:grid;grid-template-columns:200px minmax(0,1fr);gap:1.4rem;align-items:start}
   .pf-foto{display:grid;gap:.6rem;justify-items:center;text-align:center}
@@ -59,6 +61,8 @@
         </div>
       </section>
 
+      <section class="card" id="absensi"></section>
+
       <section class="card" id="gaji"></section>
 
       <section class="card" id="profil">
@@ -74,12 +78,6 @@
         <p class="note">Ada data yang salah? Hubungi Sekretaris untuk memperbaikinya.</p>
       </section>
 
-      <section class="segera" aria-label="Fitur yang akan datang">
-        <div class="card">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg></div>
-          <div><h3>Absensi</h3><p>Absen masuk &amp; pulang di pos jaga. Segera hadir.</p></div>
-        </div>
-      </section>
     </main>
   </div>
 </div>
@@ -89,6 +87,7 @@
 <script src="js/sesi.js"></script>
 <script src="js/layout.js"></script>
 <script src="js/gaji.js"></script>
+<script src="js/absensi.js"></script>
 <script>
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const tgl = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
@@ -96,7 +95,8 @@
 
   wajibLogin(['anggota']).then(async (akun) => {
     if (!akun) return;
-    pasangLayout({ peran: 'anggota', aktif: { '#profil': 'profil', '#gaji': 'gaji' }[location.hash] || 'dashboard', judul: 'Dashboard Anggota', akun });
+    pasangLayout({ peran: 'anggota', aktif: { '#profil': 'profil', '#gaji': 'gaji', '#absensi': 'absensi' }[location.hash] || 'dashboard', judul: 'Dashboard Anggota', akun });
+    mulaiAbsensiSatpam({ wadah: document.getElementById('absensi'), anggotaId: akun.id });
     mulaiGajiAnggota({ wadah: document.getElementById('gaji'), anggotaId: akun.id });
     document.getElementById('nama').textContent = akun.nama;
     document.getElementById('loading').hidden = true;
