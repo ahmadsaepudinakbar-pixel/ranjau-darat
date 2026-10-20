@@ -1,6 +1,5 @@
 // Halaman Login CV. Ranjau Darat
 // Login cukup username + password; jabatan dibaca otomatis dari akun.
-// Dropdown 'Pilih Akses Login' hanya mengubah tampilan (ikon & judul jabatan).
 // Tahap tampilan: belum tersambung ke Supabase. Bagian bertanda TODO diganti saat Supabase siap.
 
 const ROLES = {
@@ -29,33 +28,19 @@ const msg = $('msg'), submitBtn = $('submitBtn');
 // Tahun otomatis
 document.querySelectorAll('.yr').forEach((e) => (e.textContent = new Date().getFullYear()));
 
-const roleSel = $('role');
-
-// Ubah ikon & judul sesuai jabatan yang dipilih di dropdown
-function applyRole(role) {
-  const icon = $('roleIcon');
-  if (ROLES[role]) {
-    const r = ROLES[role];
-    $('title').textContent = 'Login ' + r.label;
-    $('sub').hidden = true;
-    icon.className = 'role-icon ' + role;
-    icon.innerHTML = r.icon;
-    icon.hidden = false;
-    document.title = 'Login ' + r.label + ' - CV. Ranjau Darat';
-  } else {
-    $('title').textContent = 'Login Sistem';
-    $('sub').hidden = false;
-    icon.hidden = true;
-    document.title = 'Login Sistem - CV. Ranjau Darat';
-  }
-}
-
-roleSel.addEventListener('change', () => applyRole(roleSel.value));
-
-// Jika dibuka dari kartu jabatan di beranda (login.html?role=ketua), dropdown langsung terpilih
+// Jika dibuka dari kartu jabatan di beranda (login.html?role=ketua), tampilkan ikon & judulnya.
+// Ini hanya tampilan; jabatan sebenarnya tetap dibaca dari akun.
 const hint = new URLSearchParams(location.search).get('role');
-if (ROLES[hint]) roleSel.value = hint;
-applyRole(roleSel.value);
+if (ROLES[hint]) {
+  const r = ROLES[hint];
+  $('title').textContent = 'Login ' + r.label;
+  $('sub').hidden = true;
+  const icon = $('roleIcon');
+  icon.className = 'role-icon ' + hint;
+  icon.innerHTML = r.icon;
+  icon.hidden = false;
+  document.title = 'Login ' + r.label + ' - CV. Ranjau Darat';
+}
 
 function showMsg(text, ok = false) {
   msg.textContent = text;
