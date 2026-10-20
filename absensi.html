@@ -28,6 +28,8 @@
     </header>
 
     <main class="content">
+      <section class="card" id="pengajuan"></section>
+
       <section class="card" id="absensi"></section>
 
       <section aria-labelledby="rekapJudul">
@@ -59,6 +61,7 @@
 <script src="js/supabase-config.js"></script>
 <script src="js/sesi.js"></script>
 <script src="js/layout.js"></script>
+<script src="js/bukti.js"></script>
 <script src="js/absensi.js"></script>
 <script>
   wajibLogin(['ketua', 'sekretaris']).then((akun) => {
@@ -68,6 +71,7 @@
     document.getElementById('loading').hidden = true;
     document.getElementById('app').hidden = false;
 
+    mulaiPengajuanPengurus({ wadah: document.getElementById('pengajuan'), saatJumlah: (n) => setBadgeMenu('absensi', n) });
     const beda = (n) => (n > 0 ? '+' + n : n < 0 ? String(n) : '±0') + ' dari kemarin';
     mulaiAbsensiPengurus({
       wadah: document.getElementById('absensi'),

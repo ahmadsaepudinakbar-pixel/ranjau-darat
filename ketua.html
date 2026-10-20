@@ -80,6 +80,8 @@
         setBadgeMenu('pendaftaran', s.menunggu);
       }
     });
+    sb.from('pengajuan_izin').select('id').eq('status', 'menunggu')
+      .then(({ data }) => setBadgeMenu('absensi', data ? data.length : 0));
     if (location.hash === '#pendaftaran') document.getElementById('pendaftaran').scrollIntoView();
   });
 </script>
