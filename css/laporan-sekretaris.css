@@ -1,0 +1,8 @@
+/* Laporan Sekretariat (melengkapi laporan.css) */
+.lap-tbl td.rp small{display:block;color:var(--muted);font-weight:400;font-size:.8rem}
+.lap-surat{min-width:620px}
+.lap-surat td.nomor{white-space:nowrap;font-variant-numeric:tabular-nums}
+.catatan-lap{margin:.5rem 0 0;color:var(--muted);font-size:.85rem}
+.tiga-kolom{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}
+@media (max-width:900px){.tiga-kolom{grid-template-columns:1fr}}
+@media print{.tiga-kolom{grid-template-columns:repeat(3,minmax(0,1fr))}}
