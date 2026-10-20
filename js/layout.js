@@ -20,7 +20,7 @@ const MENU = {
   ketua: [
     ['dashboard', 'Dashboard', 'ketua.html'],
     ['pendaftaran', 'Pendaftaran', 'ketua.html#pendaftaran'],
-    ['anggota', 'Data Anggota', ''],
+    ['anggota', 'Data Anggota', 'data-anggota.html'],
     ['absensi', 'Absensi', 'absensi.html'],
     ['keuangan', 'Keuangan', 'keuangan.html'],
     ['laporan', 'Laporan', 'laporan.html'],
@@ -29,7 +29,7 @@ const MENU = {
   sekretaris: [
     ['dashboard', 'Dashboard', 'sekretaris.html'],
     ['pendaftaran', 'Pendaftaran', 'sekretaris.html#pendaftaran'],
-    ['anggota', 'Data Anggota', ''],
+    ['anggota', 'Data Anggota', 'data-anggota.html'],
     ['surat', 'Surat & Dokumen', ''],
     ['absensi', 'Absensi', 'absensi.html'],
     ['laporan', 'Laporan', ''],
