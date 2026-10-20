@@ -1,0 +1,57 @@
+/* Panel Admin — memakai token dari style.css dan komponen formulir dari daftar.css */
+.loading-page{text-align:center;color:var(--muted);padding:5rem 16px}
+.admin-wrap{margin-top:-3.5rem;padding-bottom:3rem;position:relative;display:grid;gap:1.4rem}
+
+.hub{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.hub a{display:grid;align-content:start;gap:.15rem;padding:1rem 1.1rem;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:var(--white);box-shadow:0 8px 24px rgba(17,36,71,.08);transition:border-color .15s,transform .15s}
+.hub a:hover{border-color:var(--gold-deep);transform:translateY(-2px)}
+.hub b{color:var(--navy-900);font-family:var(--f-display);font-size:1.3rem}
+.hub span{color:var(--muted);font-size:.88rem}
+
+.panel-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+.panel-top h2{font-size:1.6rem;color:var(--navy-900)}
+.panel.inner{box-shadow:none;background:var(--paper)}
+.panel.inner .f input,.panel.inner .f select{background:var(--white)}
+
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.tbl{width:100%;border-collapse:collapse;font-size:.95rem;min-width:640px}
+.tbl th{text-align:left;font-weight:700;color:var(--muted);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;background:var(--paper);padding:.7rem .9rem;border-bottom:1px solid var(--line)}
+.tbl td{padding:.7rem .9rem;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.empty{text-align:center;color:var(--muted);padding:1.6rem}
+.tbl .aksi{width:260px}
+.tbl .muted{color:var(--muted)}
+
+.badge{display:inline-block;font-size:.78rem;font-weight:700;padding:.18rem .65rem;border-radius:99px;white-space:nowrap}
+.b-admin{background:#efe6fb;color:#4a2380}
+.b-ketua{background:#fdf1d3;color:#7a5408}
+.b-sekretaris{background:#e3f4ea;color:#126b40}
+.b-bendahara{background:#fde9dc;color:#a24812}
+
+.ubah{display:flex;gap:.4rem;align-items:center}
+.ubah select{font:inherit;font-size:.9rem;padding:.4rem .5rem;border:1px solid #cfd6e3;border-radius:6px;background:var(--white);min-width:0;flex:1}
+.ubah .btn{padding:.4rem .8rem;font-size:.88rem}
+.ubah .btn[hidden]{display:none}
+
+.grid-addr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.span-2{grid-column:span 2}
+
+.done-card{text-align:center;border-color:#bfe3cd}
+.done-card h2{font-size:1.7rem;color:#126b40}
+.kred{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;max-width:520px;margin:.6rem auto 0}
+.kred div{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem;display:grid;gap:.2rem}
+.kred span{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.kred b{font-size:1.15rem;color:var(--navy-900);font-family:ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+.done-card .actions{justify-content:center;margin-top:1rem}
+
+.alert.ok{background:#e6f6ed;border-color:#bfe3cd;color:#126b40}
+
+@media (max-width:900px){
+  .hub{grid-template-columns:1fr 1fr}
+  .grid-addr{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  .grid-addr{grid-template-columns:1fr}
+  .span-2{grid-column:auto}
+  .kred{grid-template-columns:1fr}
+}

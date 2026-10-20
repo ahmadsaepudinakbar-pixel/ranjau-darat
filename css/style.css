@@ -12,6 +12,7 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
   --f-body:"Source Sans 3","Segoe UI",Roboto,Arial,sans-serif;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
 a{color:inherit}
 .wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -141,6 +142,7 @@ footer a:hover{color:var(--gold)}
   .menu a{display:block;padding:.6rem 0}
   .burger{display:block}
   .nav .btn{display:none}
+  .nav .btn.btn-keluar{display:inline-flex;padding:.5rem .9rem;font-size:.9rem}
   /* HP: sama seperti komputer — foto di belakang, satpam di kanan, tulisan kecil di kiri */
   .hero{background-position:84% center;background-size:cover;
     background-image:

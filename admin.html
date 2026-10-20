@@ -8,20 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
-<style>
-  .dash{min-height:calc(100vh - 73px);display:grid;place-items:center;padding-block:3rem}
-  .box{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:2rem 1.6rem;max-width:520px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(17,36,71,.08)}
-  .box h1{font-size:2rem;color:var(--navy-900);margin:.3rem 0 .6rem}
-  .box p{color:var(--muted);margin:.4rem 0}
-  .box .btn{margin-top:1.2rem}
-  .loading{color:var(--muted)}
-  .hub{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:1.2rem;text-align:left}
-  .hub a{display:grid;align-content:start;gap:.15rem;padding:.9rem 1rem;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:var(--paper)}
-  .hub a:hover{border-color:var(--gold-deep);background:#fffaf0}
-  .hub b{color:var(--navy-900);font-family:var(--f-display);font-size:1.25rem}
-  .hub span{color:var(--muted);font-size:.88rem}
-  @media (max-width:480px){.hub{grid-template-columns:1fr}}
-</style>
+<link rel="stylesheet" href="css/daftar.css">
+<link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
 <header>
@@ -30,35 +18,214 @@
       <img src="assets/logo.png" alt="Logo CV. Ranjau Darat">
       <span><b>CV. RANJAU DARAT</b><small>SATPAM &amp; ADMINISTRASI</small></span>
     </a>
-    <button class="btn btn-gold" type="button" onclick="keluar()">Logout</button>
+    <button class="btn btn-gold btn-keluar" type="button" onclick="keluar()">Logout</button>
   </div>
 </header>
-<main class="wrap dash">
-  <p class="loading" id="loading">Memeriksa akun...</p>
-  <section class="box" id="isi" hidden>
-    <div class="eyebrow">Panel Admin</div>
-    <h1>Selamat datang, <span id="nama"></span></h1>
-    <p>Anda masuk sebagai <b>Admin</b> dengan username <b id="uname"></b>. Pilih dashboard yang ingin dibuka:</p>
-    <div class="hub">
-      <a href="ketua.html"><b>Ketua</b><span>Semua fitur & pengaturan</span></a>
+
+<p class="loading-page" id="loading">Memeriksa akun...</p>
+
+<div id="isi" hidden>
+  <section class="page-head">
+    <div class="wrap">
+      <div class="eyebrow">Panel Admin</div>
+      <h1>Selamat datang, <span id="nama"></span></h1>
+      <p>Anda masuk sebagai <b>Admin</b> dengan username <b id="uname"></b>.</p>
+    </div>
+  </section>
+
+  <main class="wrap admin-wrap">
+
+    <!-- Pindah dashboard -->
+    <nav class="hub" aria-label="Buka dashboard">
+      <a href="ketua.html"><b>Ketua</b><span>Semua fitur &amp; pengaturan</span></a>
       <a href="sekretaris.html"><b>Sekretaris</b><span>Data anggota, pendaftaran, surat</span></a>
       <a href="bendahara.html"><b>Bendahara</b><span>Keuangan, iuran, transaksi</span></a>
       <a href="anggota.html"><b>Anggota</b><span>Profil, absensi, iuran</span></a>
-    </div>
-    <button class="btn btn-gold" type="button" onclick="keluar()">Logout</button>
-  </section>
-</main>
+    </nav>
+
+    <!-- Daftar pengurus -->
+    <section class="panel">
+      <div class="panel-top">
+        <div>
+          <h2>Pengurus</h2>
+          <p class="note">Ketua, Sekretaris, Bendahara, dan Admin yang sudah aktif.</p>
+        </div>
+        <button class="btn btn-gold" type="button" id="btnTambah">+ Tambah Pengurus</button>
+      </div>
+
+      <p class="alert" id="listMsg" hidden></p>
+      <div class="table-scroll">
+        <table class="tbl">
+          <thead>
+            <tr><th>Nama</th><th>Username</th><th>WhatsApp</th><th>Jabatan</th><th class="aksi">Ubah jabatan</th></tr>
+          </thead>
+          <tbody id="tbody">
+            <tr><td colspan="5" class="empty">Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Formulir tambah pengurus -->
+    <section class="panel" id="formPanel" hidden>
+      <div class="panel-top">
+        <div>
+          <h2>Tambah Pengurus</h2>
+          <p class="note">Akun langsung aktif tanpa perlu persetujuan. Berikan username dan password ke orangnya.</p>
+        </div>
+        <button class="btn btn-line" type="button" id="btnTutup">Tutup</button>
+      </div>
+
+      <form id="formPengurus" class="reg" novalidate>
+        <div class="grid-2">
+          <fieldset class="panel inner">
+            <legend><span class="no">1</span>Jabatan &amp; Akun Login</legend>
+            <div class="f">
+              <label for="p_jabatan">Jabatan <i>*</i></label>
+              <select id="p_jabatan" required>
+                <option value="" selected disabled>Pilih jabatan</option>
+                <option value="ketua">Ketua</option>
+                <option value="sekretaris">Sekretaris</option>
+                <option value="bendahara">Bendahara</option>
+              </select>
+              <small class="err"></small>
+            </div>
+            <div class="f">
+              <label for="p_username">Username <i>*</i></label>
+              <input id="p_username" type="text" maxlength="20" placeholder="Contoh: ketua.budi" autocomplete="off" required>
+              <small class="hint">4–20 karakter: huruf kecil, angka, titik, atau garis bawah.</small>
+              <small class="err"></small>
+            </div>
+            <div class="f">
+              <label for="p_pass">Password <i>*</i></label>
+              <div class="pw">
+                <input id="p_pass" type="text" placeholder="Minimal 8 karakter" autocomplete="new-password" required>
+                <button type="button" class="peek" id="btnAcak">Acak</button>
+              </div>
+              <small class="hint">Ditampilkan supaya bisa Anda salin dan berikan ke pengurus.</small>
+              <small class="err"></small>
+            </div>
+          </fieldset>
+
+          <fieldset class="panel inner">
+            <legend><span class="no">2</span>Data Pribadi</legend>
+            <div class="f">
+              <label for="p_nama">Nama Lengkap <i>*</i></label>
+              <input id="p_nama" type="text" placeholder="Sesuai KTP" required>
+              <small class="err"></small>
+            </div>
+            <div class="f">
+              <label for="p_nik">NIK <i>*</i></label>
+              <input id="p_nik" type="text" inputmode="numeric" maxlength="16" placeholder="16 digit sesuai KTP" required>
+              <small class="err"></small>
+            </div>
+            <div class="row-2">
+              <div class="f">
+                <label for="p_tempat">Tempat Lahir <i>*</i></label>
+                <input id="p_tempat" type="text" required>
+                <small class="err"></small>
+              </div>
+              <div class="f">
+                <label for="p_tgl">Tanggal Lahir <i>*</i></label>
+                <input id="p_tgl" type="date" required>
+                <small class="err"></small>
+              </div>
+            </div>
+            <div class="row-2">
+              <div class="f">
+                <label for="p_jk">Jenis Kelamin <i>*</i></label>
+                <select id="p_jk" required>
+                  <option value="" selected disabled>Pilih</option>
+                  <option value="L">Laki-laki</option>
+                  <option value="P">Perempuan</option>
+                </select>
+                <small class="err"></small>
+              </div>
+              <div class="f">
+                <label for="p_wa">No. WhatsApp <i>*</i></label>
+                <input id="p_wa" type="tel" inputmode="tel" placeholder="08..." required>
+                <small class="err"></small>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <fieldset class="panel inner">
+          <legend><span class="no">3</span>Alamat</legend>
+          <div class="grid-addr">
+            <div class="f span-2">
+              <label for="p_alamat">Alamat Lengkap <i>*</i></label>
+              <input id="p_alamat" type="text" placeholder="Jalan, gang, nomor rumah, atau dusun" required>
+              <small class="err"></small>
+            </div>
+            <div class="row-2 keep">
+              <div class="f">
+                <label for="p_rt">RT <i>*</i></label>
+                <input id="p_rt" type="text" inputmode="numeric" maxlength="3" required>
+                <small class="err"></small>
+              </div>
+              <div class="f">
+                <label for="p_rw">RW <i>*</i></label>
+                <input id="p_rw" type="text" inputmode="numeric" maxlength="3" required>
+                <small class="err"></small>
+              </div>
+            </div>
+            <div class="f">
+              <label for="p_desa">Kelurahan / Desa <i>*</i></label>
+              <input id="p_desa" type="text" required>
+              <small class="err"></small>
+            </div>
+            <div class="f">
+              <label for="p_kec">Kecamatan <i>*</i></label>
+              <input id="p_kec" type="text" required>
+              <small class="err"></small>
+            </div>
+            <div class="f">
+              <label for="p_kab">Kabupaten / Kota <i>*</i></label>
+              <input id="p_kab" type="text" required>
+              <small class="err"></small>
+            </div>
+            <div class="f">
+              <label for="p_prov">Provinsi <i>*</i></label>
+              <select id="p_prov" required>
+                <option value="" selected disabled>Pilih provinsi</option>
+              </select>
+              <small class="err"></small>
+            </div>
+          </div>
+        </fieldset>
+
+        <p class="alert" id="formMsg" hidden></p>
+        <div class="actions">
+          <button class="btn btn-line" type="reset" id="btnReset">Kosongkan</button>
+          <button class="btn btn-gold" type="submit" id="btnSimpan">Simpan &amp; Aktifkan Akun</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Hasil setelah akun dibuat -->
+    <section class="panel done-card" id="hasil" hidden>
+      <h2>Akun pengurus aktif</h2>
+      <p>Berikan data login ini ke <b id="h_nama"></b> (<span id="h_jabatan"></span>):</p>
+      <div class="kred">
+        <div><span>Username</span><b id="h_user"></b></div>
+        <div><span>Password</span><b id="h_pass"></b></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-line" type="button" id="btnSalin">Salin data login</button>
+        <button class="btn btn-gold" type="button" id="btnSelesai">Selesai</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="mini">
+  <div class="wrap"><div class="copy">© <span class="yr">2026</span> CV. RANJAU DARAT. Semua Hak Dilindungi.</div></div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/sesi.js"></script>
-<script>
-  wajibLogin(['admin']).then((akun) => {
-    if (!akun) return;
-    document.getElementById('nama').textContent = akun.nama;
-    document.getElementById('uname').textContent = akun.username;
-    document.getElementById('loading').hidden = true;
-    document.getElementById('isi').hidden = false;
-  });
-</script>
+<script src="js/admin.js"></script>
 </body>
 </html>
