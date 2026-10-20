@@ -59,6 +59,7 @@ const RULES = {
   desa: (v) => !v.trim() ? 'Kelurahan/desa wajib diisi.' : '',
   kec: (v) => !v.trim() ? 'Kecamatan wajib diisi.' : '',
   kab: (v) => !v.trim() ? 'Kabupaten/kota wajib diisi.' : '',
+  prov: (v) => !v ? 'Pilih provinsi.' : '',
   username: (v) => !/^[a-z0-9._]{4,20}$/.test(v) ? 'Username 4–20 karakter: huruf kecil, angka, titik, atau garis bawah.' : '',
   pass: (v) => v.length < 8 ? 'Password minimal 8 karakter.' : '',
   pass2: (v) => !v ? 'Ulangi password.' : (v !== $('pass').value ? 'Password tidak sama.' : '')
