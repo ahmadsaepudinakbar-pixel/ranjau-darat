@@ -20,10 +20,22 @@ async function wajibLogin(jabatanBoleh) {
 
   if (!jabatanBoleh.includes(akun.jabatan)) {
     // Salah halaman: arahkan ke dashboard miliknya sendiri
-    location.replace(DASHBOARD[akun.jabatan] || DASHBOARD.anggota);
+    const tujuan = DASHBOARD[akun.jabatan];
+    const sekarang = location.pathname.split('/').pop();
+    if (!tujuan || tujuan === sekarang) {
+      // Pengaman: jangan berputar-putar mengalihkan ke halaman yang sama
+      tampilkanGagal('Jabatan "' + akun.jabatan + '" belum punya halaman dashboard. Muat ulang dengan Ctrl + Shift + R atau hubungi Admin.');
+      return null;
+    }
+    location.replace(tujuan);
     return null;
   }
   return akun;
+}
+
+function tampilkanGagal(pesan) {
+  const el = document.getElementById('loading');
+  if (el) { el.textContent = pesan; el.style.color = '#c0392b'; el.style.fontWeight = '600'; el.style.maxWidth = '34em'; el.style.textAlign = 'center'; }
 }
 
 async function keluar() {
