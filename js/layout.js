@@ -30,7 +30,7 @@ const MENU = {
     ['dashboard', 'Dashboard', 'sekretaris.html'],
     ['pendaftaran', 'Pendaftaran', 'sekretaris.html#pendaftaran'],
     ['anggota', 'Data Anggota', 'data-anggota.html'],
-    ['surat', 'Surat & Dokumen', ''],
+    ['surat', 'Surat & Dokumen', 'surat.html'],
     ['absensi', 'Absensi', 'absensi.html'],
     ['laporan', 'Laporan', ''],
     ['pengaturan', 'Pengaturan', '']
