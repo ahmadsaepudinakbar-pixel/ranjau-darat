@@ -16,6 +16,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 
 // Halaman dashboard per jabatan
 const DASHBOARD = {
+  admin: 'admin.html',
   ketua: 'ketua.html',
   sekretaris: 'sekretaris.html',
   bendahara: 'bendahara.html',

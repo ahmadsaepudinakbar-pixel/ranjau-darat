@@ -2,6 +2,10 @@
 // Login cukup username + password; jabatan dibaca otomatis dari akun.
 
 const ROLES = {
+  admin: {
+    label: 'Admin', dashboard: 'admin.html',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><circle cx="12" cy="11" r="2.5"/></svg>'
+  },
   ketua: {
     label: 'Ketua', dashboard: 'ketua.html',
     icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 11H5z"/><rect x="5" y="19" width="14" height="2" rx="1"/></svg>'
