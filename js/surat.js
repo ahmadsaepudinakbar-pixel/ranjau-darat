@@ -14,6 +14,7 @@ function mulaiSurat({ wadah, bolehUbah, saatData }) {
   let tab = 'semua';
   let kataCari = '';
   let dipilih = null;
+  let kodeSurat = null;   // dari pengaturan_sekretariat (opsional)
 
   wadah.innerHTML = `
     <div class="card-head">
@@ -50,6 +51,8 @@ function mulaiSurat({ wadah, bolehUbah, saatData }) {
 
   // ---------- Muat data ----------
   async function muat() {
+    sb.from('pengaturan_sekretariat').select('kode_surat').eq('id', 1).maybeSingle()
+      .then(({ data }) => { if (data && data.kode_surat) kodeSurat = data.kode_surat; });
     const { data, error } = await sb.from('surat')
       .select('id, arah, nomor_surat, tanggal, pihak, perihal, keterangan, file_path, file_nama, dibuat_pada')
       .order('tanggal', { ascending: false })
@@ -197,6 +200,15 @@ function mulaiSurat({ wadah, bolehUbah, saatData }) {
     muat();
   }
 
+  // Usulan nomor surat keluar: urut/KODE/bulan-romawi/tahun (urut = jumlah surat keluar tahun itu + 1)
+  function usulanNomor(tanggal) {
+    if (!kodeSurat) return '';
+    const d = new Date((tanggal || hariIni()) + 'T00:00:00');
+    const romawi = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+    const urut = semua.filter((x) => x.arah === 'keluar' && new Date(x.tanggal + 'T00:00:00').getFullYear() === d.getFullYear()).length + 1;
+    return String(urut).padStart(3, '0') + '/' + kodeSurat + '/' + romawi[d.getMonth()] + '/' + d.getFullYear();
+  }
+
   // ---------- Formulir catat / ubah ----------
   function form(r) {
     const baru = !r;
@@ -232,9 +244,23 @@ function mulaiSurat({ wadah, bolehUbah, saatData }) {
 
     dlg.querySelector('[data-tutup]').onclick = () => dlg.close();
     dlg.querySelector('[data-batal]').onclick = () => (baru ? dlg.close() : buka(r.id));
-    dlg.querySelector('[name="arah"]').addEventListener('change', (e) => {
+    const fArah = dlg.querySelector('[name="arah"]');
+    const fNomor = dlg.querySelector('[name="nomor_surat"]');
+    const fTgl = dlg.querySelector('[name="tanggal"]');
+    let terakhirUsulan = '';
+    const isiUsulan = () => {
+      if (!baru || fArah.value !== 'keluar') return;
+      if (fNomor.value.trim() && fNomor.value !== terakhirUsulan) return; // jangan timpa ketikan sendiri
+      terakhirUsulan = usulanNomor(fTgl.value);
+      if (terakhirUsulan) fNomor.value = terakhirUsulan;
+    };
+    fArah.addEventListener('change', (e) => {
       dlg.querySelector('[data-lbl-pihak]').textContent = e.target.value === 'masuk' ? 'Pengirim' : 'Tujuan';
+      if (e.target.value === 'masuk' && fNomor.value === terakhirUsulan) { fNomor.value = ''; terakhirUsulan = ''; }
+      isiUsulan();
     });
+    fTgl.addEventListener('change', isiUsulan);
+    isiUsulan();
     dlg.querySelector('[data-simpan]').onclick = (e) => simpan(e.currentTarget, baru);
     if (!dlg.open) dlg.showModal();
     dlg.querySelector('[name="nomor_surat"]').focus();

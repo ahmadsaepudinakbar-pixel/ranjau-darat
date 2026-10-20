@@ -32,8 +32,8 @@ const MENU = {
     ['anggota', 'Data Anggota', 'data-anggota.html'],
     ['surat', 'Surat & Dokumen', 'surat.html'],
     ['absensi', 'Absensi', 'absensi.html'],
-    ['laporan', 'Laporan', ''],
-    ['pengaturan', 'Pengaturan', '']
+    ['laporan', 'Laporan', 'laporan-sekretaris.html'],
+    ['pengaturan', 'Pengaturan', 'pengaturan-sekretaris.html']
   ],
   bendahara: [
     ['dashboard', 'Dashboard', 'bendahara.html'],
