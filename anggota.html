@@ -2,51 +2,135 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Dashboard Anggota - CV. Ranjau Darat</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/dash.css">
 <style>
-  .dash{min-height:calc(100vh - 73px);display:grid;place-items:center;padding-block:3rem}
-  .box{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:2rem 1.6rem;max-width:520px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(17,36,71,.08)}
-  .box h1{font-size:2rem;color:var(--navy-900);margin:.3rem 0 .6rem}
-  .box p{color:var(--muted);margin:.4rem 0}
-  .box .btn{margin-top:1.2rem}
-  .loading{color:var(--muted)}
+  .profil{display:grid;grid-template-columns:200px minmax(0,1fr);gap:1.4rem;align-items:start}
+  .pf-foto{display:grid;gap:.6rem;justify-items:center;text-align:center}
+  .pf-foto .img{width:100%;max-width:200px;aspect-ratio:3/4;border-radius:12px;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);font-size:.85rem;overflow:hidden}
+  .pf-foto img{width:100%;height:100%;object-fit:cover;display:block}
+  .pf-foto b{font-family:var(--f-display);font-size:1.35rem;color:var(--navy-900);line-height:1.1}
+  .pf-foto small{color:var(--muted)}
+  .pf-data{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1.6rem;margin:0}
+  .pf-data div{display:grid;grid-template-columns:9rem 1fr;gap:.6rem;padding:.6rem 0;border-bottom:1px dashed var(--line)}
+  .pf-data dt{color:var(--muted)}
+  .pf-data dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+  .note{margin:1rem 0 0;color:var(--muted);font-size:.9rem}
+  .segera{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+  .segera .card{display:flex;gap:.9rem;align-items:center}
+  .segera .ic{width:44px;height:44px;border-radius:10px;background:var(--paper);color:var(--navy-700);display:grid;place-items:center;flex:none}
+  .segera .ic svg{width:22px;height:22px}
+  .segera h3{margin:0;font-family:var(--f-display);font-size:1.25rem;color:var(--navy-900)}
+  .segera p{margin:.1rem 0 0;color:var(--muted);font-size:.9rem}
+  @media (max-width:760px){
+    .profil{grid-template-columns:1fr}
+    .pf-data{grid-template-columns:1fr}
+    .pf-data div{grid-template-columns:8rem 1fr}
+    .segera{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="index.html">
-      <img src="assets/logo.png" alt="Logo CV. Ranjau Darat">
-      <span><b>CV. RANJAU DARAT</b><small>SATPAM &amp; ADMINISTRASI</small></span>
-    </a>
-    <button class="btn btn-gold btn-keluar" type="button" onclick="keluar()">Logout</button>
+<p class="loading-page" id="loading">Memeriksa akun...</p>
+
+<div class="shell" id="app" hidden>
+  <aside class="side" id="side"></aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 id="judul">Dashboard Anggota</h1>
+      <span class="tgl" id="tgl"></span>
+      <div class="chip" id="chip"></div>
+    </header>
+
+    <main class="content">
+      <section class="welcome">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div>
+        <div>
+          <h2>Selamat datang, <span id="nama"></span></h2>
+          <p>Lihat profil, lakukan absensi, cek iuran, dan informasi terbaru.</p>
+        </div>
+      </section>
+
+      <section class="card" id="profil">
+        <div class="card-head"><h2>Profil Saya</h2><span class="pill p-diterima" id="pfStatus">Aktif</span></div>
+        <div class="profil">
+          <div class="pf-foto">
+            <div class="img" id="pfImg">Memuat foto...</div>
+            <b id="pfNama"></b>
+            <small id="pfSub"></small>
+          </div>
+          <dl class="pf-data" id="pfData"></dl>
+        </div>
+        <p class="note">Ada data yang salah? Hubungi Sekretaris untuk memperbaikinya.</p>
+      </section>
+
+      <section class="segera" aria-label="Fitur yang akan datang">
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg></div>
+          <div><h3>Absensi</h3><p>Absen masuk &amp; pulang di pos jaga. Segera hadir.</p></div>
+        </div>
+        <div class="card">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1 1.1-1.8 2.5-1.8s2.5.8 2.5 2-1.1 1.6-2.5 2-2.5 1-2.5 2.1 1.1 2 2.5 2 2.5-.8 2.5-1.8"/></svg></div>
+          <div><h3>Iuran</h3><p>Cek riwayat dan tagihan iuran. Segera hadir.</p></div>
+        </div>
+      </section>
+    </main>
   </div>
-</header>
-<main class="wrap dash">
-  <p class="loading" id="loading">Memeriksa akun...</p>
-  <section class="box" id="isi" hidden>
-    <div class="eyebrow">Dashboard Anggota</div>
-    <h1>Selamat datang, <span id="nama"></span></h1>
-    <p>Anda masuk sebagai <b>Anggota</b> dengan username <b id="uname"></b>.</p>
-    <p>Halaman dashboard Anggota sedang dibuat.</p>
-    <button class="btn btn-gold" type="button" onclick="keluar()">Logout</button>
-  </section>
-</main>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/sesi.js"></script>
+<script src="js/layout.js"></script>
 <script>
-  wajibLogin(['anggota']).then((akun) => {
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const tgl = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
+  const JAB = { admin: 'Admin', ketua: 'Ketua', sekretaris: 'Sekretaris', bendahara: 'Bendahara', anggota: 'Anggota' };
+
+  wajibLogin(['anggota']).then(async (akun) => {
     if (!akun) return;
+    pasangLayout({ peran: 'anggota', aktif: location.hash === '#profil' ? 'profil' : 'dashboard', judul: 'Dashboard Anggota', akun });
     document.getElementById('nama').textContent = akun.nama;
-    document.getElementById('uname').textContent = akun.username;
     document.getElementById('loading').hidden = true;
-    document.getElementById('isi').hidden = false;
+    document.getElementById('app').hidden = false;
+
+    // Data lengkap milik sendiri (diizinkan oleh aturan "lihat data sendiri")
+    const { data: p, error } = await sb.from('anggota')
+      .select('username, nama, nik, tempat_lahir, tanggal_lahir, jenis_kelamin, posisi, no_wa, alamat, rt, rw, desa, kecamatan, kabupaten, provinsi, foto_path, jabatan, disetujui_pada, dibuat_pada')
+      .eq('id', akun.id).maybeSingle();
+    if (error || !p) { document.getElementById('pfData').innerHTML = '<p>Gagal memuat profil.</p>'; return; }
+
+    document.getElementById('pfNama').textContent = p.nama;
+    document.getElementById('pfSub').textContent = '@' + p.username + ' · ' + (p.posisi === 'satpam' ? 'Satpam' : JAB[p.jabatan]);
+    const baris = (k, v) => '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>';
+    const nikSamar = p.nik ? p.nik.slice(0, 6) + '••••••' + p.nik.slice(-4) : '-';
+    document.getElementById('pfData').innerHTML =
+      baris('NIK', nikSamar) +
+      baris('No. WhatsApp', esc(p.no_wa)) +
+      baris('Tempat, tgl lahir', esc(p.tempat_lahir) + ', ' + tgl(p.tanggal_lahir)) +
+      baris('Jenis kelamin', p.jenis_kelamin === 'P' ? 'Perempuan' : 'Laki-laki') +
+      baris('Alamat', esc(p.alamat) + ', RT ' + esc(p.rt) + '/RW ' + esc(p.rw)) +
+      baris('Kelurahan/Desa', esc(p.desa)) +
+      baris('Kecamatan', esc(p.kecamatan)) +
+      baris('Kabupaten/Kota', esc(p.kabupaten)) +
+      baris('Provinsi', esc(p.provinsi || '-')) +
+      baris('Anggota sejak', tgl(p.disetujui_pada || p.dibuat_pada));
+
+    const kotak = document.getElementById('pfImg');
+    if (!p.foto_path) { kotak.textContent = 'Belum ada foto'; }
+    else {
+      const { data: u } = await sb.storage.from('dokumen').createSignedUrl(p.foto_path, 600);
+      if (u) { kotak.innerHTML = '<img alt="Foto ' + esc(p.nama) + '">'; kotak.querySelector('img').src = u.signedUrl; }
+      else kotak.textContent = 'Foto tidak bisa dimuat';
+    }
+    if (location.hash === '#profil') document.getElementById('profil').scrollIntoView();
   });
 </script>
 </body>

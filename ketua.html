@@ -2,51 +2,85 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Dashboard Ketua - CV. Ranjau Darat</title>
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css">
-<style>
-  .dash{min-height:calc(100vh - 73px);display:grid;place-items:center;padding-block:3rem}
-  .box{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:2rem 1.6rem;max-width:520px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(17,36,71,.08)}
-  .box h1{font-size:2rem;color:var(--navy-900);margin:.3rem 0 .6rem}
-  .box p{color:var(--muted);margin:.4rem 0}
-  .box .btn{margin-top:1.2rem}
-  .loading{color:var(--muted)}
-</style>
+<link rel="stylesheet" href="css/dash.css">
+<link rel="stylesheet" href="css/pendaftaran.css">
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="index.html">
-      <img src="assets/logo.png" alt="Logo CV. Ranjau Darat">
-      <span><b>CV. RANJAU DARAT</b><small>SATPAM &amp; ADMINISTRASI</small></span>
-    </a>
-    <button class="btn btn-gold btn-keluar" type="button" onclick="keluar()">Logout</button>
+<p class="loading-page" id="loading">Memeriksa akun...</p>
+
+<div class="shell" id="app" hidden>
+  <aside class="side" id="side"></aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 id="judul">Dashboard Ketua</h1>
+      <span class="tgl" id="tgl"></span>
+      <div class="chip" id="chip"></div>
+    </header>
+
+    <main class="content">
+      <section class="welcome">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 11H5z"/><rect x="5" y="19" width="14" height="2" rx="1"/></svg></div>
+        <div>
+          <h2>Selamat datang, <span id="nama"></span></h2>
+          <p>Kelola seluruh data dan pantau kegiatan organisasi.</p>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="Ringkasan">
+        <div class="stat s-info">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.5c2.6.2 4.4 2 5 5"/></svg></div>
+          <span class="lbl">Anggota Terdaftar</span><b data-stat="diterima">–</b><small data-stat="baruBulanIni-teks">&nbsp;</small>
+        </div>
+        <div class="stat s-warn">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <span class="lbl">Menunggu Verifikasi</span><b data-stat="menunggu">–</b><small>Perlu diperiksa</small>
+        </div>
+        <div class="stat s-ok">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div>
+          <span class="lbl">Satpam Aktif</span><b data-stat="satpamAktif">–</b><small>Sudah disetujui</small>
+        </div>
+        <div class="stat s-bad">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>
+          <span class="lbl">Ditolak</span><b data-stat="ditolak">–</b><small>Pendaftaran ditolak</small>
+        </div>
+      </section>
+
+      <section class="card" id="pendaftaran"></section>
+    </main>
   </div>
-</header>
-<main class="wrap dash">
-  <p class="loading" id="loading">Memeriksa akun...</p>
-  <section class="box" id="isi" hidden>
-    <div class="eyebrow">Dashboard Ketua</div>
-    <h1>Selamat datang, <span id="nama"></span></h1>
-    <p>Anda masuk sebagai <b>Ketua</b> dengan username <b id="uname"></b>.</p>
-    <p>Halaman dashboard Ketua sedang dibuat.</p>
-    <button class="btn btn-gold" type="button" onclick="keluar()">Logout</button>
-  </section>
-</main>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/sesi.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/pendaftaran.js"></script>
 <script>
   wajibLogin(['ketua']).then((akun) => {
     if (!akun) return;
+    pasangLayout({ peran: 'ketua', aktif: location.hash === '#pendaftaran' ? 'pendaftaran' : 'dashboard', judul: 'Dashboard Ketua', akun });
     document.getElementById('nama').textContent = akun.nama;
-    document.getElementById('uname').textContent = akun.username;
     document.getElementById('loading').hidden = true;
-    document.getElementById('isi').hidden = false;
+    document.getElementById('app').hidden = false;
+
+    mulaiPendaftaran({
+      wadah: document.getElementById('pendaftaran'),
+      saatData: (s) => {
+        ['diterima', 'menunggu', 'satpamAktif', 'ditolak'].forEach((k) => (document.querySelector('[data-stat="' + k + '"]').textContent = s[k]));
+        document.querySelector('[data-stat="baruBulanIni-teks"]').textContent = s.baruBulanIni + ' pendaftar baru bulan ini';
+        setBadgeMenu('pendaftaran', s.menunggu);
+      }
+    });
+    if (location.hash === '#pendaftaran') document.getElementById('pendaftaran').scrollIntoView();
   });
 </script>
 </body>
