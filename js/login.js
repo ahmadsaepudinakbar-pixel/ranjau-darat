@@ -1,85 +1,67 @@
 // Halaman Login CV. Ranjau Darat
+// Login cukup username + password; jabatan dibaca otomatis dari akun.
+// Dropdown 'Pilih Akses Login' hanya mengubah tampilan (ikon & judul jabatan).
 // Tahap tampilan: belum tersambung ke Supabase. Bagian bertanda TODO diganti saat Supabase siap.
 
 const ROLES = {
   ketua: {
-    label: 'Ketua',
-    dashboard: 'ketua.html',
+    label: 'Ketua', dashboard: 'ketua.html',
     icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 11H5z"/><rect x="5" y="19" width="14" height="2" rx="1"/></svg>'
   },
   sekretaris: {
-    label: 'Sekretaris',
-    dashboard: 'sekretaris.html',
+    label: 'Sekretaris', dashboard: 'sekretaris.html',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>'
   },
   bendahara: {
-    label: 'Bendahara',
-    dashboard: 'bendahara.html',
+    label: 'Bendahara', dashboard: 'bendahara.html',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h14a2 2 0 012 2v9a2 2 0 01-2 2H4z"/><path d="M4 7l11-3v3"/><circle cx="16" cy="13.5" r="1.3" fill="currentColor"/></svg>'
   },
   anggota: {
-    label: 'Anggota',
-    dashboard: 'anggota.html',
+    label: 'Anggota', dashboard: 'anggota.html',
     icon: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="3.2"/><circle cx="5.5" cy="10" r="2.3"/><circle cx="18.5" cy="10" r="2.3"/><path d="M6 20c0-3.5 2.7-6 6-6s6 2.5 6 6zM1 19c0-2.5 1.8-4.2 4.3-4.2 1 0 1.8.3 2.4.7C6.4 16.5 5.6 17.8 5.4 19zM23 19c0-2.5-1.8-4.2-4.3-4.2-1 0-1.8.3-2.4.7 1.3 1 2.1 2.3 2.3 3.5z"/></svg>'
   }
 };
 
 const $ = (id) => document.getElementById(id);
-const title = $('title'), roleIcon = $('roleIcon'), chooser = $('chooser');
-const backBtn = $('backBtn'), daftarNote = $('daftarNote');
 const form = $('loginForm'), user = $('username'), pass = $('password');
 const msg = $('msg'), submitBtn = $('submitBtn');
 
-let currentRole = null;
+// Tahun otomatis
+document.querySelectorAll('.yr').forEach((e) => (e.textContent = new Date().getFullYear()));
 
-function showRole(role) {
-  currentRole = ROLES[role] ? role : null;
-  msg.hidden = true;
+const roleSel = $('role');
 
-  if (currentRole) {
-    const r = ROLES[currentRole];
-    title.textContent = 'Login ' + r.label;
-    roleIcon.className = 'role-icon ' + currentRole;
-    roleIcon.innerHTML = r.icon;
-    roleIcon.hidden = false;
-    chooser.hidden = true;
-    backBtn.hidden = false;
-    // Link daftar hanya relevan untuk anggota
-    daftarNote.hidden = currentRole !== 'anggota';
+// Ubah ikon & judul sesuai jabatan yang dipilih di dropdown
+function applyRole(role) {
+  const icon = $('roleIcon');
+  if (ROLES[role]) {
+    const r = ROLES[role];
+    $('title').textContent = 'Login ' + r.label;
+    $('sub').hidden = true;
+    icon.className = 'role-icon ' + role;
+    icon.innerHTML = r.icon;
+    icon.hidden = false;
     document.title = 'Login ' + r.label + ' - CV. Ranjau Darat';
   } else {
-    title.textContent = 'Login Sistem';
-    roleIcon.hidden = true;
-    chooser.hidden = false;
-    backBtn.hidden = true;
-    daftarNote.hidden = false;
+    $('title').textContent = 'Login Sistem';
+    $('sub').hidden = false;
+    icon.hidden = true;
     document.title = 'Login Sistem - CV. Ranjau Darat';
   }
-
-  // Simpan pilihan di alamat (login.html?role=ketua) tanpa memuat ulang
-  const url = new URL(location.href);
-  if (currentRole) url.searchParams.set('role', currentRole);
-  else url.searchParams.delete('role');
-  history.replaceState(null, '', url);
-
-  user.focus();
 }
+
+roleSel.addEventListener('change', () => applyRole(roleSel.value));
+
+// Jika dibuka dari kartu jabatan di beranda (login.html?role=ketua), dropdown langsung terpilih
+const hint = new URLSearchParams(location.search).get('role');
+if (ROLES[hint]) roleSel.value = hint;
+applyRole(roleSel.value);
 
 function showMsg(text, ok = false) {
   msg.textContent = text;
   msg.className = 'msg' + (ok ? ' ok' : '');
   msg.hidden = false;
 }
-
-// Pilih jabatan
-document.querySelectorAll('.role').forEach((btn) =>
-  btn.addEventListener('click', () => showRole(btn.dataset.role))
-);
-
-backBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  showRole(null);
-});
 
 // Tampilkan / sembunyikan password
 $('peek').addEventListener('click', (e) => {
@@ -91,7 +73,6 @@ $('peek').addEventListener('click', (e) => {
 
 [user, pass].forEach((el) => el.addEventListener('input', () => el.removeAttribute('aria-invalid')));
 
-// Kirim form
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.hidden = true;
@@ -107,16 +88,12 @@ form.addEventListener('submit', async (e) => {
   // TODO (Supabase):
   // 1. Cari email dari username di tabel profil, lalu supabase.auth.signInWithPassword({ email, password })
   // 2. Ambil jabatan & status akun dari tabel profil
-  // 3. Jika status 'menunggu'  -> showMsg('Akun Anda masih menunggu persetujuan Ketua atau Sekretaris.')
-  //    Jika status 'ditolak'   -> showMsg('Pendaftaran Anda ditolak. Hubungi Sekretaris.')
-  //    Jika jabatan tidak cocok dengan currentRole -> showMsg('Akun ini bukan akun ' + ROLES[currentRole].label + '.')
-  //    Jika diterima -> location.href = ROLES[jabatan].dashboard
+  // 3. status 'menunggu' -> showMsg('Akun Anda masih menunggu persetujuan Ketua atau Sekretaris.')
+  //    status 'ditolak'  -> showMsg('Pendaftaran Anda ditolak. Hubungi Sekretaris.')
+  //    status 'diterima' -> location.href = ROLES[jabatan].dashboard   (otomatis sesuai jabatan di akun)
   await new Promise((r) => setTimeout(r, 600));
 
   submitBtn.disabled = false;
   submitBtn.textContent = 'Login';
   showMsg('Login belum aktif. Sistem sedang disiapkan, coba lagi nanti.');
 });
-
-// Buka langsung jabatan dari alamat, misalnya login.html?role=sekretaris
-showRole(new URLSearchParams(location.search).get('role'));
