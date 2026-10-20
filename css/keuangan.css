@@ -1,0 +1,32 @@
+/* Fitur Keuangan (kas) — melengkapi dash.css, pendaftaran.css, gaji.css */
+.stats.tiga{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:1000px){.stats.tiga{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.stats.tiga{grid-template-columns:1fr}}
+
+.tbl td.masuk{color:var(--ok);font-weight:700}
+.tbl td.keluar{color:var(--bad);font-weight:700}
+.tbl td.ket{color:var(--muted);max-width:22rem;overflow-wrap:anywhere}
+.kat{display:inline-block;font-size:.78rem;font-weight:700;padding:.15rem .6rem;border-radius:99px;background:var(--paper);color:var(--navy-700);white-space:nowrap}
+
+.kas-total{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;justify-content:flex-end;margin-top:.8rem;font-size:.92rem;color:var(--muted)}
+.kas-total b{font-variant-numeric:tabular-nums}
+.kas-total .m{color:var(--ok)}.kas-total .k{color:var(--bad)}
+
+.catatan-gaji{margin:.9rem 0 0;padding:.7rem .9rem;border-radius:10px;background:var(--info-soft);color:var(--info);font-size:.9rem}
+
+.jenis{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.jenis label{cursor:pointer}
+.jenis input{position:absolute;opacity:0;pointer-events:none}
+.jenis span{display:block;text-align:center;padding:.65rem .5rem;border-radius:8px;border:1.5px solid #cfd6e3;background:#fbfcfe;font-weight:700;color:var(--muted)}
+.jenis input[value="masuk"]:checked + span{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.jenis input[value="keluar"]:checked + span{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.jenis input:focus-visible + span{outline:3px solid var(--gold);outline-offset:2px}
+
+.link-card{display:flex;gap:.9rem;align-items:center;text-decoration:none}
+.link-card:hover{border-color:var(--gold-deep)}
+.link-card .ic{width:44px;height:44px;border-radius:10px;background:var(--paper);color:var(--navy-700);display:grid;place-items:center;flex:none}
+.link-card .ic svg{width:22px;height:22px}
+.link-card h3{margin:0;font-family:var(--f-display);font-size:1.25rem;color:var(--navy-900)}
+.link-card p{margin:.1rem 0 0;color:var(--muted);font-size:.9rem}
+.link-card .go{margin-left:auto;color:var(--gold-deep);font-weight:700;white-space:nowrap}
+.hint-sql{color:var(--warn);font-size:.85rem;font-weight:600}

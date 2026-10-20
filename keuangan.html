@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Keuangan - CV. Ranjau Darat</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="css/dash.css">
+<link rel="stylesheet" href="css/pendaftaran.css">
+<link rel="stylesheet" href="css/gaji.css">
+<link rel="stylesheet" href="css/keuangan.css">
+</head>
+<body>
+<p class="loading-page" id="loading">Memeriksa akun...</p>
+
+<div class="shell" id="app" hidden>
+  <aside class="side" id="side"></aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 id="judul">Keuangan</h1>
+      <span class="tgl" id="tgl"></span>
+      <div class="chip" id="chip"></div>
+    </header>
+
+    <main class="content">
+      <section class="stats tiga" aria-label="Ringkasan kas">
+        <div class="stat s-info">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h14a2 2 0 012 2v9a2 2 0 01-2 2H4z"/><path d="M4 7l11-3v3"/><circle cx="16" cy="13.5" r="1.2" fill="currentColor"/></svg></div>
+          <span class="lbl">Saldo Kas</span><b data-k="saldo" style="font-size:1.5rem">–</b><small>Setelah gaji dibayar</small>
+        </div>
+        <div class="stat s-ok">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+          <span class="lbl">Pemasukan</span><b data-k="masuk" style="font-size:1.5rem">–</b><small data-k="periode">&nbsp;</small>
+        </div>
+        <div class="stat s-bad">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+          <span class="lbl">Pengeluaran</span><b data-k="keluar" style="font-size:1.5rem">–</b><small data-k="ketKeluar">&nbsp;</small>
+        </div>
+      </section>
+
+      <section class="card" id="kas"></section>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/sesi.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/gaji.js"></script>
+<script src="js/keuangan.js"></script>
+<script>
+  // Bendahara & Admin boleh mencatat; Ketua hanya melihat
+  wajibLogin(['bendahara', 'ketua']).then((akun) => {
+    if (!akun) return;
+    const peran = akun.jabatan === 'ketua' ? 'ketua' : 'bendahara';
+    pasangLayout({ peran, aktif: 'keuangan', judul: 'Keuangan', akun });
+    document.getElementById('loading').hidden = true;
+    document.getElementById('app').hidden = false;
+
+    const k = (n) => document.querySelector('[data-k="' + n + '"]');
+    mulaiKeuangan({
+      wadah: document.getElementById('kas'),
+      bolehUbah: ['bendahara', 'admin'].includes(akun.jabatan),
+      saatData: (d) => {
+        if (d.error) { ['saldo', 'masuk', 'keluar'].forEach((n) => (k(n).textContent = '–')); return; }
+        k('saldo').textContent = fmtRp(d.saldo);
+        k('masuk').textContent = fmtRp(d.masuk);
+        k('keluar').textContent = fmtRp(d.keluar + d.gaji);
+        k('periode').textContent = d.periode;
+        k('ketKeluar').textContent = d.gaji ? 'Termasuk gaji ' + fmtRp(d.gaji) : d.periode;
+      }
+    });
+  });
+</script>
+</body>
+</html>

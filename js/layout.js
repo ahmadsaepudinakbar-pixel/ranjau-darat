@@ -22,7 +22,7 @@ const MENU = {
     ['pendaftaran', 'Pendaftaran', 'ketua.html#pendaftaran'],
     ['anggota', 'Data Anggota', ''],
     ['absensi', 'Absensi', 'absensi.html'],
-    ['keuangan', 'Keuangan', ''],
+    ['keuangan', 'Keuangan', 'keuangan.html'],
     ['laporan', 'Laporan', ''],
     ['pengaturan', 'Pengaturan', '']
   ],
@@ -37,7 +37,7 @@ const MENU = {
   ],
   bendahara: [
     ['dashboard', 'Dashboard', 'bendahara.html'],
-    ['keuangan', 'Keuangan', ''],
+    ['keuangan', 'Keuangan', 'keuangan.html'],
     ['gaji', 'Gaji Anggota', 'bendahara.html#gaji'],
     ['laporan', 'Laporan Keuangan', ''],
     ['pengaturan', 'Pengaturan', '']
