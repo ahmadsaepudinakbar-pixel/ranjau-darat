@@ -21,10 +21,11 @@ const MENU = {
     ['dashboard', 'Dashboard', 'ketua.html'],
     ['pendaftaran', 'Pendaftaran', 'ketua.html#pendaftaran'],
     ['anggota', 'Data Anggota', 'data-anggota.html'],
+    ['surat', 'Surat & Dokumen', 'surat.html'],
     ['absensi', 'Absensi', 'absensi.html'],
     ['keuangan', 'Keuangan', 'keuangan.html'],
     ['laporan', 'Laporan', 'laporan.html'],
-    ['pengaturan', 'Pengaturan', '']
+    ['pengaturan', 'Pengaturan', 'pengaturan-ketua.html']
   ],
   sekretaris: [
     ['dashboard', 'Dashboard', 'sekretaris.html'],
