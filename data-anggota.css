@@ -1,0 +1,28 @@
+/* Halaman Data Anggota */
+.tbl.anggota{min-width:860px}
+.tbl .jab{font-weight:600}
+.tbl td.aksi{text-align:right;white-space:nowrap}
+.tbl td.nik{font-variant-numeric:tabular-nums;white-space:nowrap}
+.filter-jab{border:1px solid #cfd6e3;border-radius:8px;background:var(--white);color:var(--ink);font:inherit;font-size:.92rem;padding:.5rem .7rem}
+.filter-jab:focus{outline:none;border-color:var(--gold-deep);box-shadow:0 0 0 3px rgba(232,181,58,.25)}
+.ringkas{margin:.8rem 0 0;color:var(--muted);font-size:.88rem}
+
+.pill.j-ketua{background:var(--navy-900);color:var(--gold)}
+.pill.j-sekretaris{background:var(--info-soft);color:var(--info)}
+.pill.j-bendahara{background:var(--warn-soft);color:var(--warn)}
+.pill.j-anggota{background:var(--paper);color:var(--muted)}
+
+/* Formulir ubah data di dalam dialog */
+.form-ubah{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem 1rem;margin:0}
+.form-ubah label{display:grid;gap:.25rem;font-weight:600;font-size:.88rem}
+.form-ubah label.penuh{grid-column:1/-1}
+.form-ubah input,.form-ubah select,.form-ubah textarea{font:inherit;font-size:.93rem;font-weight:400;border:1px solid #cfd6e3;border-radius:8px;padding:.5rem .7rem;background:var(--white);color:var(--ink);width:100%}
+.form-ubah input:focus,.form-ubah select:focus,.form-ubah textarea:focus{outline:none;border-color:var(--gold-deep);box-shadow:0 0 0 3px rgba(232,181,58,.25)}
+.form-ubah input[readonly]{background:var(--paper);color:var(--muted)}
+.form-ubah .rtrw{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.form-ubah .galat{grid-column:1/-1;margin:0;color:var(--bad);font-weight:600;font-size:.9rem}
+
+@media (max-width:640px){
+  .form-ubah{grid-template-columns:1fr}
+  .filter-jab{flex:1 1 100%}
+}
