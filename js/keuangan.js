@@ -8,6 +8,12 @@ const KATEGORI_KAS = {
   keluar: ['Operasional', 'Seragam & Perlengkapan', 'Transportasi', 'Alat Tulis & Cetak', 'Lainnya']
 };
 
+// Pengaturan (kategori, saldo awal, kop laporan). null jika belum disiapkan di database.
+async function muatPengaturanKas() {
+  const { data, error } = await sb.from('pengaturan_kas').select('*').eq('id', 1).maybeSingle();
+  return error || !data ? null : data;
+}
+
 const hariIniISO = () => {
   const n = new Date();
   return n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
@@ -36,6 +42,13 @@ function mulaiKeuangan({ wadah, bolehUbah = true, saatData }) {
   let filter = 'semua';       // semua | masuk | keluar
   let kataCari = '';
   let diedit = null;
+
+  // Daftar kategori mengikuti Pengaturan (jika ada); jika gagal, pakai daftar bawaan
+  muatPengaturanKas().then((p) => {
+    if (!p) return;
+    if (p.kategori_masuk && p.kategori_masuk.length) KATEGORI_KAS.masuk = p.kategori_masuk;
+    if (p.kategori_keluar && p.kategori_keluar.length) KATEGORI_KAS.keluar = p.kategori_keluar;
+  });
 
   wadah.innerHTML = `
     <div class="card-head">

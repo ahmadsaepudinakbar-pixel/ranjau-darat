@@ -23,7 +23,7 @@ const MENU = {
     ['anggota', 'Data Anggota', ''],
     ['absensi', 'Absensi', 'absensi.html'],
     ['keuangan', 'Keuangan', 'keuangan.html'],
-    ['laporan', 'Laporan', ''],
+    ['laporan', 'Laporan', 'laporan.html'],
     ['pengaturan', 'Pengaturan', '']
   ],
   sekretaris: [
@@ -39,8 +39,8 @@ const MENU = {
     ['dashboard', 'Dashboard', 'bendahara.html'],
     ['keuangan', 'Keuangan', 'keuangan.html'],
     ['gaji', 'Gaji Anggota', 'bendahara.html#gaji'],
-    ['laporan', 'Laporan Keuangan', ''],
-    ['pengaturan', 'Pengaturan', '']
+    ['laporan', 'Laporan Keuangan', 'laporan.html'],
+    ['pengaturan', 'Pengaturan', 'pengaturan.html']
   ],
   anggota: [
     ['dashboard', 'Dashboard', 'anggota.html#dashboard'],

@@ -1,0 +1,50 @@
+/* Laporan Keuangan — tampilan layar & cetak */
+.kertas{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:2rem 2.2rem;display:grid;gap:1.5rem;min-width:0}
+.kertas .kosong{padding:2rem 1rem}
+.kop{text-align:center;border-bottom:3px double var(--navy-900);padding-bottom:1rem}
+.kop h2{margin:0;font-family:var(--f-display);font-size:1.9rem;letter-spacing:.03em;color:var(--navy-900)}
+.kop h3{margin:.7rem 0 .1rem;font-family:var(--f-display);font-size:1.25rem;letter-spacing:.12em;color:var(--navy-900)}
+.kop p{margin:.1rem 0;color:var(--muted)}
+.kertas h4{margin:0 0 .4rem;font-family:var(--f-display);font-size:1.1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--navy-900)}
+.dua-kolom{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}
+.lap-tbl{width:100%;border-collapse:collapse;font-size:.95rem}
+.lap-tbl td{padding:.45rem .2rem;border-bottom:1px dashed var(--line)}
+.lap-tbl td.rp{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lap-tbl tr.plus td.rp{color:var(--ok)}
+.lap-tbl tr.minus td.rp{color:var(--bad)}
+.lap-tbl tr.jml td{border-top:2px solid var(--navy-900);border-bottom:0;font-weight:700;color:var(--navy-900)}
+.lap-tbl tr.besar td{font-size:1.15rem}
+.lap-tbl .kosong-kecil{color:var(--muted);text-align:center;padding:.8rem}
+.lap-trx{min-width:560px}
+.ttd{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem;text-align:center;margin-top:.5rem;break-inside:avoid}
+.ttd p{margin:0;color:var(--muted);line-height:1.4}
+.ttd .garis{display:block;height:4.5rem}
+.ttd b{display:inline-block;border-top:1px solid var(--ink);padding:.2rem 1.5rem 0;min-width:12rem}
+
+/* Pengaturan */
+.pengaturan{display:grid;gap:1.3rem}
+.pengaturan .card h2{font-family:var(--f-display);font-size:1.35rem;margin:0 0 .2rem;color:var(--navy-900)}
+.pengaturan .card > p.sub{margin:0 0 1rem;color:var(--muted);font-size:.92rem}
+.pengaturan .f textarea{min-height:9rem;resize:vertical;line-height:1.5}
+.pengaturan .dua{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.pengaturan .aksi{display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap}
+.pengaturan .f .hint{color:var(--muted);font-size:.82rem}
+
+@media (max-width:760px){
+  .kertas{padding:1.2rem 1rem}
+  .dua-kolom,.pengaturan .dua,.ttd{grid-template-columns:1fr}
+}
+
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff}
+  .side,.topbar,#barAdmin,.no-print,.toast{display:none!important}
+  .shell{display:block}
+  .content{max-width:none;padding:0;gap:0}
+  .kertas{border:0;border-radius:0;padding:0;gap:1.1rem}
+  .table-scroll{border:0;overflow:visible}
+  .tbl{min-width:0;font-size:.82rem}
+  .tbl th{background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .kertas section,.ttd{break-inside:avoid}
+  .catatan-gaji{background:none;color:var(--muted);padding:0}
+}
