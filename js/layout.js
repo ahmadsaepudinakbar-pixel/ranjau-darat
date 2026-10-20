@@ -43,7 +43,7 @@ const MENU = {
     ['pengaturan', 'Pengaturan', '']
   ],
   anggota: [
-    ['dashboard', 'Dashboard', 'anggota.html'],
+    ['dashboard', 'Dashboard', 'anggota.html#dashboard'],
     ['profil', 'Profil Saya', 'anggota.html#profil'],
     ['absensi', 'Absensi', 'anggota.html#absensi'],
     ['gaji', 'Gaji', 'anggota.html#gaji']

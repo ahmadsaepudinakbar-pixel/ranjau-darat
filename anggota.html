@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="css/pendaftaran.css">
 <link rel="stylesheet" href="css/absensi.css">
 <style>
+  .view{display:grid;gap:1.3rem}
   .profil{display:grid;grid-template-columns:200px minmax(0,1fr);gap:1.4rem;align-items:start}
   .pf-foto{display:grid;gap:.6rem;justify-items:center;text-align:center}
   .pf-foto .img{width:100%;max-width:200px;aspect-ratio:3/4;border-radius:12px;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);font-size:.85rem;overflow:hidden}
@@ -53,31 +54,43 @@
     </header>
 
     <main class="content">
-      <section class="welcome">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div>
-        <div>
-          <h2>Selamat datang, <span id="nama"></span></h2>
-          <p>Lihat profil, lakukan absensi, cek gaji, dan informasi terbaru.</p>
-        </div>
-      </section>
-
-      <section class="card" id="absensi"></section>
-
-      <section class="card" id="gaji"></section>
-
-      <section class="card" id="profil">
-        <div class="card-head"><h2>Profil Saya</h2><span class="pill p-diterima" id="pfStatus">Aktif</span></div>
-        <div class="profil">
-          <div class="pf-foto">
-            <div class="img" id="pfImg">Memuat foto...</div>
-            <b id="pfNama"></b>
-            <small id="pfSub"></small>
+      <!-- 1. DASHBOARD: selamat datang + absensi hari ini -->
+      <div class="view" data-view="dashboard">
+        <section class="welcome">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div>
+          <div>
+            <h2>Selamat datang, <span id="nama"></span></h2>
+            <p>Selamat bertugas. Jangan lupa absen masuk dan pulang.</p>
           </div>
-          <dl class="pf-data" id="pfData"></dl>
-        </div>
-        <p class="note">Ada data yang salah? Hubungi Sekretaris untuk memperbaikinya.</p>
-      </section>
+        </section>
+        <section class="card" id="hariIni"></section>
+      </div>
 
+      <!-- 2. PROFIL -->
+      <div class="view" data-view="profil" hidden>
+        <section class="card">
+          <div class="card-head"><h2>Profil Saya</h2><span class="pill p-diterima">Aktif</span></div>
+          <div class="profil">
+            <div class="pf-foto">
+              <div class="img" id="pfImg">Memuat foto...</div>
+              <b id="pfNama"></b>
+              <small id="pfSub"></small>
+            </div>
+            <dl class="pf-data" id="pfData"></dl>
+          </div>
+          <p class="note">Ada data yang salah? Hubungi Sekretaris untuk memperbaikinya.</p>
+        </section>
+      </div>
+
+      <!-- 3. RIWAYAT ABSENSI -->
+      <div class="view" data-view="absensi" hidden>
+        <section class="card" id="riwayat"></section>
+      </div>
+
+      <!-- 4. GAJI -->
+      <div class="view" data-view="gaji" hidden>
+        <section class="card" id="gaji"></section>
+      </div>
     </main>
   </div>
 </div>
@@ -96,8 +109,20 @@
 
   wajibLogin(['anggota']).then(async (akun) => {
     if (!akun) return;
-    pasangLayout({ peran: 'anggota', aktif: { '#profil': 'profil', '#gaji': 'gaji', '#absensi': 'absensi' }[location.hash] || 'dashboard', judul: 'Dashboard Anggota', akun });
-    mulaiAbsensiSatpam({ wadah: document.getElementById('absensi'), anggotaId: akun.id });
+    const JUDUL = { dashboard: 'Dashboard', profil: 'Profil Saya', absensi: 'Riwayat Absensi', gaji: 'Gaji' };
+    const viewDari = () => { const v = location.hash.slice(1); return JUDUL[v] ? v : 'dashboard'; };
+    pasangLayout({ peran: 'anggota', aktif: viewDari(), judul: JUDUL[viewDari()], akun });
+    const gantiView = () => {
+      const v = viewDari();
+      document.querySelectorAll('.view').forEach((el) => (el.hidden = el.dataset.view !== v));
+      document.getElementById('judul').textContent = JUDUL[v];
+      document.querySelectorAll('#side nav a[data-key]').forEach((a) => a.toggleAttribute('aria-current', a.dataset.key === v));
+      document.querySelector('#side nav a[data-key="' + v + '"]')?.setAttribute('aria-current', 'page');
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('hashchange', gantiView);
+    gantiView();
+    mulaiAbsensiSatpam({ wadah: document.getElementById('hariIni'), wadahRiwayat: document.getElementById('riwayat'), anggotaId: akun.id, namaSaya: akun.nama });
     mulaiGajiAnggota({ wadah: document.getElementById('gaji'), anggotaId: akun.id });
     document.getElementById('nama').textContent = akun.nama;
     document.getElementById('loading').hidden = true;
@@ -112,9 +137,8 @@
     document.getElementById('pfNama').textContent = p.nama;
     document.getElementById('pfSub').textContent = '@' + p.username + ' · ' + (p.posisi === 'satpam' ? 'Satpam' : JAB[p.jabatan]);
     const baris = (k, v) => '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>';
-    const nikSamar = p.nik ? p.nik.slice(0, 6) + '••••••' + p.nik.slice(-4) : '-';
     document.getElementById('pfData').innerHTML =
-      baris('NIK', nikSamar) +
+      baris('NIK', esc(p.nik || '-')) +
       baris('No. WhatsApp', esc(p.no_wa)) +
       baris('Tempat, tgl lahir', esc(p.tempat_lahir) + ', ' + tgl(p.tanggal_lahir)) +
       baris('Jenis kelamin', p.jenis_kelamin === 'P' ? 'Perempuan' : 'Laki-laki') +
@@ -123,6 +147,7 @@
       baris('Kecamatan', esc(p.kecamatan)) +
       baris('Kabupaten/Kota', esc(p.kabupaten)) +
       baris('Provinsi', esc(p.provinsi || '-')) +
+      baris('Username', '@' + esc(p.username)) +
       baris('Anggota sejak', tgl(p.disetujui_pada || p.dibuat_pada));
 
     const kotak = document.getElementById('pfImg');
@@ -132,7 +157,6 @@
       if (u) { kotak.innerHTML = '<img alt="Foto ' + esc(p.nama) + '">'; kotak.querySelector('img').src = u.signedUrl; }
       else kotak.textContent = 'Foto tidak bisa dimuat';
     }
-    if (location.hash) { const el = document.querySelector(location.hash); if (el) el.scrollIntoView(); }
   });
 </script>
 </body>

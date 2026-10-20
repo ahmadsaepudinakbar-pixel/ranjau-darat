@@ -274,28 +274,37 @@ function mulaiGajiBendahara({ wadah, saatData, bolehUbah = true }) {
 // ANGGOTA (lihat gaji sendiri)
 // =====================================================================
 async function mulaiGajiAnggota({ wadah, anggotaId }) {
-  wadah.innerHTML = '<div class="card-head"><h2>Gaji</h2></div><p class="kosong">Memuat riwayat gaji...</p>';
+  const kepala = '<div class="card-head"><h2>Slip Gaji Bulan Ini</h2><span style="color:var(--muted);font-size:.9rem">' + namaPeriode(bulanIni()) + '</span></div>';
+  wadah.innerHTML = kepala + '<p class="kosong">Memuat data gaji...</p>';
   const { data, error } = await sb.from('gaji')
     .select('id, periode, tanggal_gajian, gaji_pokok, lembur, tunjangan, potongan, total, keterangan')
     .eq('anggota_id', anggotaId).order('periode', { ascending: false });
+  if (error) { wadah.innerHTML = kepala + '<p class="kosong">Gagal memuat data gaji. ' + escG(pesanError(error)) + '</p>'; return; }
 
-  if (error) { wadah.innerHTML = '<div class="card-head"><h2>Gaji</h2></div><p class="kosong">Gagal memuat riwayat gaji. ' + escG(pesanError(error)) + '</p>'; return; }
-  if (!data.length) { wadah.innerHTML = '<div class="card-head"><h2>Gaji</h2></div><p class="kosong">Belum ada riwayat gaji. Gaji yang sudah dibayarkan akan tampil di sini.</p>'; return; }
+  // Slip bulan ini = gaji yang dibayarkan (tanggal gajian) pada bulan berjalan
+  const bln = bulanIni();
+  const ini = data.filter((g) => g.tanggal_gajian.slice(0, 7) === bln)
+    .sort((a, b) => b.tanggal_gajian.localeCompare(a.tanggal_gajian));
+  const lain = data.filter((g) => !ini.includes(g))
+    .sort((a, b) => b.tanggal_gajian.localeCompare(a.tanggal_gajian));
 
-  const [t, ...lama] = data;
-  wadah.innerHTML = `
-    <div class="card-head"><h2>Gaji</h2><span class="muted" style="color:var(--muted);font-size:.9rem">${data.length} slip gaji</span></div>
+  const slipBulanIni = ini.length ? ini.map((t) => `
     <div class="gaji-terbaru">
       <div class="gt-kartu">
-        <small>Gaji terakhir · ${namaPeriode(t.periode)}</small>
+        <small>Gaji ${namaPeriode(t.periode)}</small>
         <b>${fmtRp(t.total)}</b>
         <p>Dibayar ${tglID(t.tanggal_gajian)}</p>
       </div>
       ${htmlSlip(t)}
-    </div>
-    ${lama.length ? '<h3 style="margin:1.4rem 0 0;font-size:1rem;color:var(--navy-900)">Riwayat tanggal gajian</h3><ul class="riwayat">' + lama.map((g) => `
+    </div>`).join('<hr style="border:0;border-top:1px dashed var(--line);margin:1.2rem 0">')
+    : '<p class="kosong">Gaji bulan ini belum dibayarkan. Slip akan tampil di sini setelah Bendahara mencatatnya.</p>';
+
+  wadah.innerHTML = kepala + slipBulanIni + `
+    <h3 style="margin:1.6rem 0 0;font-size:1.05rem;color:var(--navy-900)">Riwayat Gajian</h3>
+    ${lain.length ? '<ul class="riwayat">' + lain.map((g) => `
       <li><details>
-        <summary><span class="per"><b>${namaPeriode(g.periode)}</b><small>Dibayar ${tglID(g.tanggal_gajian)}</small></span><span class="nom">${fmtRp(g.total)}</span></summary>
+        <summary><span class="per"><b>${tglID(g.tanggal_gajian)}</b><small>Gaji ${namaPeriode(g.periode)}</small></span><span class="nom">${fmtRp(g.total)}</span></summary>
         ${htmlSlip(g)}
-      </details></li>`).join('') + '</ul>' : ''}`;
+      </details></li>`).join('') + '</ul>'
+      : '<p class="kosong" style="padding-bottom:0">Belum ada riwayat gajian sebelumnya.</p>'}`;
 }

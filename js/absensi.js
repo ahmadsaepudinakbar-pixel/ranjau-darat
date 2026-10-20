@@ -22,22 +22,26 @@ const selisihHari = (a, b) => Math.round((new Date(a + 'T12:00:00+07:00') - new 
 const rentangTeks = (a, b) => a === b ? tglPendekA(a) : tglPendekA(a) + ' – ' + tglPendekA(b) + ' (' + (selisihHari(b, a) + 1) + ' hari)';
 const PJ_LABEL = { menunggu: 'Menunggu', disetujui: 'Disetujui', ditolak: 'Ditolak' };
 
-async function mulaiAbsensiSatpam({ wadah, anggotaId }) {
-  let pos = [], riwayat = [], pengajuan = [], mode = null, bukti = null, minJam = 8, tungguPulang = null;
+// wadah = kartu 'Absensi hari ini'; wadahRiwayat (opsional) = rekap, riwayat pengajuan & riwayat absensi
+async function mulaiAbsensiSatpam({ wadah, wadahRiwayat, anggotaId, namaSaya = '' }) {
+  const RW = wadahRiwayat || null;
+  let pos = [], riwayat = [], pengajuan = [], kontak = [], mode = null, bukti = null, minJam = 8, tungguPulang = null;
 
   async function muat() {
     const hari = tglJkt();
-    const [p, r, a, s] = await Promise.all([
+    const [p, r, a, s, k] = await Promise.all([
       sb.from('pos_jaga').select('id, nama').eq('aktif', true).order('urutan'),
       sb.from('absensi').select('id, tanggal, pos_id, status, jam_masuk, jam_pulang, keterangan')
         .eq('anggota_id', anggotaId).gte('tanggal', geserHari(hari, -40)).order('tanggal', { ascending: false }),
       sb.from('pengajuan_izin').select('id, jenis, tanggal_mulai, tanggal_selesai, alasan, status, catatan, otomatis, dibuat_pada')
         .eq('anggota_id', anggotaId).gte('tanggal_selesai', geserHari(hari, -30)).order('dibuat_pada', { ascending: false }),
-      sb.from('pengaturan').select('nilai').eq('kunci', 'min_jam_jaga').maybeSingle()
+      sb.from('pengaturan').select('nilai').eq('kunci', 'min_jam_jaga').maybeSingle(),
+      sb.rpc('kontak_pengurus')
     ]);
     if (!s.error && s.data) minJam = Number(s.data.nilai) || 0;
+    kontak = (!k.error && Array.isArray(k.data)) ? k.data : [];
     const err = p.error || r.error || a.error;
-    if (err) { wadah.innerHTML = '<div class="card-head"><h2>Absensi</h2></div><p class="kosong">Gagal memuat absensi. ' + escA(pesanError(err)) + '</p>'; return; }
+    if (err) { const g = '<p class="kosong">Gagal memuat absensi. ' + escA(pesanError(err)) + '</p>'; wadah.innerHTML = '<div class="card-head"><h2>Absensi Hari Ini</h2></div>' + g; if (RW) RW.innerHTML = '<div class="card-head"><h2>Riwayat Absensi</h2></div>' + g; return; }
     pos = p.data; riwayat = r.data; pengajuan = a.data;
     tampil();
   }
@@ -85,11 +89,36 @@ async function mulaiAbsensiSatpam({ wadah, anggotaId }) {
     }
   }
 
+  // ---------- Kontak Sekretaris saat pengajuan menunggu ----------
+  const keWa = (no) => { let d = String(no || '').replace(/\D/g, ''); if (d.startsWith('0')) d = '62' + d.slice(1); else if (d.startsWith('8')) d = '62' + d; return d; };
+  const sapaan = (k) => (k.jabatan === 'sekretaris' ? 'Sekretaris' : 'Ketua');
+  function pesanWa(x, k) {
+    return 'Assalamualaikum ' + k.nama + ', saya ' + (namaSaya || 'satpam') + ' mengajukan ' + (x.jenis === 'sakit' ? 'SAKIT' : 'IZIN') +
+      ' untuk ' + rentangTeks(x.tanggal_mulai, x.tanggal_selesai) + '.\nAlasan: ' + x.alasan +
+      '\n\nPengajuan sudah saya kirim lewat web CV. Ranjau Darat. Mohon diperiksa dan disetujui. Terima kasih.';
+  }
+  function htmlKontak(x) {
+    if (!kontak.length) return '<small style="color:var(--muted)">Belum ada nomor Sekretaris yang terdaftar. Hubungi pengurus secara langsung.</small>';
+    return '<div class="kontak">' + kontak.map((k) => `
+      <div class="kontak-baris">
+        <span class="kontak-nama"><b>${escA(k.nama)}</b><small>${sapaan(k)} · ${escA(k.no_wa)}</small></span>
+        <a class="btn btn-wa btn-sm" href="https://wa.me/${keWa(k.no_wa)}?text=${encodeURIComponent(pesanWa(x, k))}" target="_blank" rel="noopener">Chat WhatsApp</a>
+        <a class="btn btn-line btn-sm" href="tel:${escA(String(k.no_wa).replace(/[^\d+]/g, ''))}">Telepon</a>
+      </div>`).join('') + '</div>';
+  }
+  function boxMenunggu(x) {
+    return `<div class="tunggu-box">
+      <p><span class="pill p-menunggu">Menunggu persetujuan</span> Pengajuan <b>${x.jenis === 'sakit' ? 'sakit' : 'izin'}</b> ${rentangTeks(x.tanggal_mulai, x.tanggal_selesai)}</p>
+      <p class="tunggu-ket">Hubungi ${kontak.length && kontak[0].jabatan === 'ketua' ? 'Ketua' : 'Sekretaris'} agar pengajuan Anda segera diperiksa:</p>
+      ${htmlKontak(x)}
+    </div>`;
+  }
+
   function tampil() {
     const hari = tglJkt(), kemarin = geserHari(hari, -1);
     const hariIni = riwayat.find((x) => x.tanggal === hari);
     const terbuka = riwayat.find((x) => x.status === 'hadir' && x.jam_masuk && !x.jam_pulang && (x.tanggal === hari || x.tanggal === kemarin));
-    const tungguHariIni = pengajuan.find((x) => x.status === 'menunggu' && x.tanggal_mulai <= hari && x.tanggal_selesai >= hari);
+    const menunggu = pengajuan.filter((x) => x.status === 'menunggu');
 
     let aksi;
     tungguPulang = null;
@@ -117,10 +146,10 @@ async function mulaiAbsensiSatpam({ wadah, anggotaId }) {
       aksi = htmlFormPengajuan(hari);
     } else {
       aksi = `
-        ${tungguHariIni ? '<p class="aturan">Pengajuan ' + tungguHariIni.jenis + ' Anda untuk hari ini masih menunggu persetujuan.</p>' : ''}
         <div class="f"><label for="pilihPos" style="font-weight:600;font-size:.9rem">Pos jaga hari ini</label>
           <select id="pilihPos"><option value="" selected disabled>Pilih pos jaga</option>${pos.map((x) => '<option value="' + x.id + '">' + escA(x.nama) + '</option>').join('')}</select></div>
         <div data-bukti></div>
+        ${minJam > 0 ? '<p class="aturan">Absen pulang bisa dilakukan minimal <b>' + String(minJam).replace('.', ',') + ' jam</b> setelah absen masuk.</p>' : ''}
         <button class="btn btn-gold" type="button" data-masuk>Absen Masuk</button>
         <p class="msg" data-msg hidden></p>
         <div style="display:flex;gap:1.2rem;flex-wrap:wrap"><button class="link" type="button" data-mode="izin">Ajukan izin (min. H-3)</button><button class="link" type="button" data-mode="sakit">Sakit hari ini</button></div>`;
@@ -130,24 +159,31 @@ async function mulaiAbsensiSatpam({ wadah, anggotaId }) {
     const ini = riwayat.filter((x) => x.tanggal.startsWith(bln));
     const n = (s) => ini.filter((x) => x.status === s).length;
 
-    wadah.innerHTML = `
-      <div class="card-head"><h2>Absensi</h2><span style="color:var(--muted);font-size:.9rem">${tglPanjangA(hari)}</span></div>
+    const htmlHari = `
+      <div class="card-head"><h2>Absensi Hari Ini</h2><span style="color:var(--muted);font-size:.9rem">${tglPanjangA(hari)}</span></div>
       <div class="absen-hari">
         <div class="jam-besar"><small>Jam sekarang</small><b data-jam>${jamKini()}</b><span>WIB</span></div>
         <div class="aksi-absen">${aksi}</div>
       </div>
-      ${pengajuan.length ? '<h3 style="margin:1.3rem 0 0;font-size:1rem;color:var(--navy-900)">Pengajuan izin & sakit</h3><ul class="pengajuan-saya">' + pengajuan.map((x) => `
+      ${!mode && menunggu.length ? menunggu.map(boxMenunggu).join('') : ''}`;
+    const htmlRiwayat = `
+      ${RW ? '<div class="card-head"><h2>Riwayat Absensi</h2></div>' : ''}
+      <div class="rekap-kecil" style="margin-top:0"><h3>Rekap ${new Date(hari + 'T12:00:00+07:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
+        <span class="p-hadir">Hadir ${n('hadir')}</span><span class="p-izin">Izin ${n('izin')}</span><span class="p-sakit">Sakit ${n('sakit')}</span><span class="p-alpha">Alpha ${n('alpha')}</span></div>
+      <div class="table-scroll"><table class="tbl" style="min-width:560px">
+        <thead><tr><th>Tanggal</th><th>Pos</th><th>Masuk</th><th>Pulang</th><th>Lama jaga</th><th>Status</th></tr></thead>
+        <tbody>${riwayat.length ? riwayat.slice(0, 40).map((x) => `<tr class="tidak-klik"><td>${tglPendekA(x.tanggal)}</td><td>${escA(x.pos_id ? namaPos(x.pos_id) : '–')}</td><td class="jam">${jamJkt(x.jam_masuk)}</td><td class="jam">${jamJkt(x.jam_pulang)}</td><td class="jam">${durasi(x.jam_masuk, x.jam_pulang) || '–'}</td><td>${pillA(x.status)}${x.keterangan ? '<br><small style="color:var(--muted)">' + escA(x.keterangan) + '</small>' : ''}</td></tr>`).join('')
+          : '<tr class="tidak-klik"><td colspan="6" class="empty">Belum ada riwayat absensi.</td></tr>'}</tbody>
+      </table></div>
+      ${pengajuan.length ? '<h3 style="margin:1.3rem 0 0;font-size:1rem;color:var(--navy-900)">Riwayat pengajuan izin & sakit</h3><ul class="pengajuan-saya">' + pengajuan.map((x) => `
         <li><div class="top"><span><span class="pill p-${x.jenis === 'sakit' ? 'sakit' : 'izin'}">${x.jenis === 'sakit' ? 'Sakit' : 'Izin'}</span> <b>${rentangTeks(x.tanggal_mulai, x.tanggal_selesai)}</b></span><span class="pill p-${x.status}">${PJ_LABEL[x.status]}</span></div>
           <small>${escA(x.alasan)}</small>
           ${x.catatan ? '<span class="cat">' + escA(x.catatan) + '</span>' : ''}
-          ${x.status === 'menunggu' ? '<button type="button" data-batal-ajuan="' + x.id + '">Batalkan pengajuan</button>' : ''}</li>`).join('') + '</ul>' : ''}
-      <div class="rekap-kecil"><h3>Rekap ${new Date(hari + 'T12:00:00+07:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
-        <span class="p-hadir">Hadir ${n('hadir')}</span><span class="p-izin">Izin ${n('izin')}</span><span class="p-sakit">Sakit ${n('sakit')}</span><span class="p-alpha">Alpha ${n('alpha')}</span></div>
-      <div class="table-scroll"><table class="tbl" style="min-width:560px">
-        <thead><tr><th>Tanggal</th><th>Pos</th><th>Masuk</th><th>Pulang</th><th>Status</th></tr></thead>
-        <tbody>${riwayat.length ? riwayat.slice(0, 31).map((x) => `<tr class="tidak-klik"><td>${tglPendekA(x.tanggal)}</td><td>${escA(x.pos_id ? namaPos(x.pos_id) : '–')}</td><td class="jam">${jamJkt(x.jam_masuk)}</td><td class="jam">${jamJkt(x.jam_pulang)}</td><td>${pillA(x.status)}</td></tr>`).join('')
-          : '<tr class="tidak-klik"><td colspan="5" class="empty">Belum ada riwayat absensi.</td></tr>'}</tbody>
-      </table></div>`;
+          ${x.status === 'menunggu' ? htmlKontak(x) + '<button type="button" data-batal-ajuan="' + x.id + '">Batalkan pengajuan</button>' : ''}</li>`).join('') + '</ul>' : ''}`;
+
+    if (RW) { wadah.innerHTML = htmlHari; RW.innerHTML = htmlRiwayat; }
+    else wadah.innerHTML = htmlHari + htmlRiwayat;
+    const wadahAjuan = RW || wadah;
 
     if (tungguPulang && wadah.querySelector('[data-sisa]')) wadah.querySelector('[data-sisa]').textContent = sisaTeks(tungguPulang);
     const q = (s) => wadah.querySelector(s);
@@ -211,13 +247,13 @@ async function mulaiAbsensiSatpam({ wadah, anggotaId }) {
           if (error) throw error;
           mode = null;
           if (data && data.status === 'ditolak') toast('Pengajuan izin otomatis ditolak karena kurang dari 3 hari sebelumnya.', true);
-          else toast('Pengajuan terkirim. Menunggu persetujuan Ketua atau Sekretaris.');
+          else toast('Pengajuan terkirim. Statusnya bisa dilihat di menu Absensi.');
           muat();
         } catch (err) { pulih(btn, 'Kirim Pengajuan'); pesan(pesanRpc(err)); }
       };
     }
 
-    wadah.querySelectorAll('[data-batal-ajuan]').forEach((b) => (b.onclick = async () => {
+    wadahAjuan.querySelectorAll('[data-batal-ajuan]').forEach((b) => (b.onclick = async () => {
       b.disabled = true; b.textContent = 'Membatalkan...';
       const { data, error } = await sb.from('pengajuan_izin').delete().eq('id', b.dataset.batalAjuan).select('id');
       if (error || !data || !data.length) { b.disabled = false; b.textContent = 'Batalkan pengajuan'; return toast('Gagal membatalkan. Mungkin sudah diproses pengurus.', true); }
@@ -233,7 +269,8 @@ async function mulaiAbsensiSatpam({ wadah, anggotaId }) {
       const s = wadah.querySelector('[data-sisa]'); if (s) s.textContent = sisaTeks(tungguPulang);
     }
   }, 15000);
-  wadah.innerHTML = '<div class="card-head"><h2>Absensi</h2></div><p class="kosong">Memuat absensi...</p>';
+  wadah.innerHTML = '<div class="card-head"><h2>Absensi Hari Ini</h2></div><p class="kosong">Memuat absensi...</p>';
+  if (RW) RW.innerHTML = '<div class="card-head"><h2>Riwayat Absensi</h2></div><p class="kosong">Memuat riwayat...</p>';
   muat();
 }
 
