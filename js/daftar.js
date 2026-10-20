@@ -1,5 +1,5 @@
 // Halaman Daftar Anggota CV. Ranjau Darat
-// Tahap tampilan: pemeriksaan isian sudah aktif, pengiriman ke Supabase belum (lihat TODO di bawah).
+// Isian diperiksa di browser, lalu dikirim ke Supabase (akun login + foto/KTP + data anggota).
 
 const MAX_FILE = 2 * 1024 * 1024; // 2 MB
 const TIPE_GAMBAR = ['image/jpeg', 'image/png'];
@@ -144,21 +144,102 @@ form.addEventListener('submit', async (e) => {
   }
 
   kirim.disabled = true;
-  kirim.textContent = 'Mengirim...';
+  const status = (t) => { kirim.textContent = t; };
 
-  // TODO (Supabase):
-  // 1. Cek username belum dipakai (tabel profil)
-  // 2. supabase.auth.signUp({ email: username + '@ranjaudarat.local', password })
-  // 3. Upload foto & KTP ke Storage bucket PRIVAT 'dokumen-anggota/<user_id>/'
-  // 4. Simpan data ke tabel 'anggota' dengan status 'menunggu'
-  // 5. Jika berhasil -> tampilkanSelesai(); jika gagal -> showAlert(pesan, true)
-  await new Promise((r) => setTimeout(r, 700));
-
-  kirim.disabled = false;
-  kirim.textContent = 'Kirim Pendaftaran';
-  showAlert('Semua isian sudah benar. Pengiriman pendaftaran belum aktif karena sistem sedang disiapkan.');
-  alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  try {
+    await kirimPendaftaran(status);
+    tampilkanSelesai();
+  } catch (err) {
+    console.error(err);
+    showAlert(err.pesan || pesanError(err), true);
+    alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } finally {
+    kirim.disabled = false;
+    kirim.textContent = 'Kirim Pendaftaran';
+  }
 });
+
+// Gagal dengan pesan yang ramah
+function gagal(pesan) { const e = new Error(pesan); e.pesan = pesan; return e; }
+
+async function kirimPendaftaran(status) {
+  const username = $('username').value.trim().toLowerCase();
+  const password = $('pass').value;
+  const nik = $('nik').value;
+
+  // 1. Cek username & NIK belum terdaftar
+  status('Memeriksa data...');
+  const [cekUser, cekNik] = await Promise.all([
+    sb.rpc('username_tersedia', { u: username }),
+    sb.rpc('nik_terdaftar', { n: nik })
+  ]);
+  if (cekUser.error) throw cekUser.error;
+  if (cekNik.error) throw cekNik.error;
+  if (cekNik.data === true) {
+    setErr($('nik'), 'NIK ini sudah terdaftar.');
+    throw gagal('NIK ini sudah terdaftar. Jika Anda sudah pernah mendaftar, silakan login.');
+  }
+  if (cekUser.data === false) {
+    setErr($('username'), 'Username ini sudah dipakai.');
+    throw gagal('Username ini sudah dipakai. Pilih username lain.');
+  }
+
+  // 2. Buat akun login
+  status('Membuat akun...');
+  const email = usernameKeEmail(username);
+  let { data, error } = await sb.auth.signUp({ email, password });
+
+  // Jika akun sudah sempat dibuat tapi pendaftaran sebelumnya terputus, lanjutkan
+  if (error && /already registered|already exists/i.test(error.message)) {
+    ({ data, error } = await sb.auth.signInWithPassword({ email, password }));
+    if (error) throw gagal('Username ini sudah dipakai. Pilih username lain.');
+  } else if (error) {
+    throw error;
+  }
+  const user = data.user;
+  if (!data.session) {
+    throw gagal('Akun dibuat tetapi belum bisa dipakai. Hubungi pengurus (konfirmasi email di Supabase masih aktif).');
+  }
+
+  // 3. Upload pas foto & KTP ke penyimpanan privat
+  status('Mengunggah foto...');
+  const ext = (f) => (f.type === 'image/png' ? 'png' : 'jpg');
+  const foto = $('foto').files[0], ktp = $('ktp').files[0];
+  const fotoPath = user.id + '/foto.' + ext(foto);
+  const ktpPath = user.id + '/ktp.' + ext(ktp);
+
+  const up1 = await sb.storage.from('dokumen').upload(fotoPath, foto, { upsert: true, contentType: foto.type });
+  if (up1.error) throw up1.error;
+  const up2 = await sb.storage.from('dokumen').upload(ktpPath, ktp, { upsert: true, contentType: ktp.type });
+  if (up2.error) throw up2.error;
+
+  // 4. Simpan data anggota (status otomatis 'menunggu')
+  status('Menyimpan data...');
+  const { error: errIns } = await sb.from('anggota').insert({
+    id: user.id,
+    username,
+    nama: $('nama').value.trim(),
+    nik,
+    tempat_lahir: $('tempat').value.trim(),
+    tanggal_lahir: $('tgl').value,
+    jenis_kelamin: $('jk').value,
+    posisi: $('jabatan').value,
+    no_wa: $('wa').value.trim(),
+    alamat: $('alamat').value.trim(),
+    rt: $('rt').value,
+    rw: $('rw').value,
+    desa: $('desa').value.trim(),
+    kecamatan: $('kec').value.trim(),
+    kabupaten: $('kab').value.trim(),
+    provinsi: $('prov').value,
+    foto_path: fotoPath,
+    ktp_path: ktpPath
+  });
+  if (errIns) throw errIns;
+
+  // Akun belum disetujui, jadi langsung keluar lagi
+  await sb.auth.signOut();
+}
 
 // Dipanggil setelah pendaftaran benar-benar tersimpan
 function tampilkanSelesai() {

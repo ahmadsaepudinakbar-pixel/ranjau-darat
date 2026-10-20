@@ -1,6 +1,5 @@
 // Halaman Login CV. Ranjau Darat
 // Login cukup username + password; jabatan dibaca otomatis dari akun.
-// Tahap tampilan: belum tersambung ke Supabase. Bagian bertanda TODO diganti saat Supabase siap.
 
 const ROLES = {
   ketua: {
@@ -70,15 +69,37 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitBtn.textContent = 'Memeriksa...';
 
-  // TODO (Supabase):
-  // 1. Cari email dari username di tabel profil, lalu supabase.auth.signInWithPassword({ email, password })
-  // 2. Ambil jabatan & status akun dari tabel profil
-  // 3. status 'menunggu' -> showMsg('Akun Anda masih menunggu persetujuan Ketua atau Sekretaris.')
-  //    status 'ditolak'  -> showMsg('Pendaftaran Anda ditolak. Hubungi Sekretaris.')
-  //    status 'diterima' -> location.href = ROLES[jabatan].dashboard   (otomatis sesuai jabatan di akun)
-  await new Promise((r) => setTimeout(r, 600));
+  try {
+    // 1. Masuk dengan username (diubah ke email internal) + password
+    const { data, error } = await sb.auth.signInWithPassword({ email: usernameKeEmail(u), password: p });
+    if (error) throw error;
 
-  submitBtn.disabled = false;
-  submitBtn.textContent = 'Login';
-  showMsg('Login belum aktif. Sistem sedang disiapkan, coba lagi nanti.');
+    // 2. Ambil jabatan & status dari tabel anggota
+    const { data: akun, error: err2 } = await sb.from('anggota')
+      .select('nama, jabatan, status').eq('id', data.user.id).maybeSingle();
+    if (err2) throw err2;
+
+    if (!akun) {
+      await sb.auth.signOut();
+      return showMsg('Data pendaftaran akun ini belum lengkap. Silakan daftar ulang atau hubungi Sekretaris.');
+    }
+    if (akun.status === 'menunggu') {
+      await sb.auth.signOut();
+      return showMsg('Akun Anda masih menunggu persetujuan Ketua atau Sekretaris.');
+    }
+    if (akun.status === 'ditolak') {
+      await sb.auth.signOut();
+      return showMsg('Pendaftaran Anda ditolak. Hubungi Sekretaris untuk keterangan.');
+    }
+
+    // 3. Diterima -> buka dashboard sesuai jabatan di akun
+    showMsg('Berhasil masuk. Membuka halaman ' + (ROLES[akun.jabatan]?.label || akun.jabatan) + '...', true);
+    location.href = DASHBOARD[akun.jabatan] || DASHBOARD.anggota;
+  } catch (err) {
+    console.error(err);
+    showMsg(pesanError(err));
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Login';
+  }
 });

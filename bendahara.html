@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Bendahara - CV. Ranjau Darat</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .dash{min-height:calc(100vh - 73px);display:grid;place-items:center;padding-block:3rem}
+  .box{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:2rem 1.6rem;max-width:520px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(17,36,71,.08)}
+  .box h1{font-size:2rem;color:var(--navy-900);margin:.3rem 0 .6rem}
+  .box p{color:var(--muted);margin:.4rem 0}
+  .box .btn{margin-top:1.2rem}
+  .loading{color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="Logo CV. Ranjau Darat">
+      <span><b>CV. RANJAU DARAT</b><small>SATPAM &amp; ADMINISTRASI</small></span>
+    </a>
+    <button class="btn btn-gold" type="button" onclick="keluar()">Logout</button>
+  </div>
+</header>
+<main class="wrap dash">
+  <p class="loading" id="loading">Memeriksa akun...</p>
+  <section class="box" id="isi" hidden>
+    <div class="eyebrow">Dashboard Bendahara</div>
+    <h1>Selamat datang, <span id="nama"></span></h1>
+    <p>Anda masuk sebagai <b>Bendahara</b> dengan username <b id="uname"></b>.</p>
+    <p>Halaman dashboard Bendahara sedang dibuat.</p>
+    <button class="btn btn-gold" type="button" onclick="keluar()">Logout</button>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/sesi.js"></script>
+<script>
+  wajibLogin(['bendahara']).then((akun) => {
+    if (!akun) return;
+    document.getElementById('nama').textContent = akun.nama;
+    document.getElementById('uname').textContent = akun.username;
+    document.getElementById('loading').hidden = true;
+    document.getElementById('isi').hidden = false;
+  });
+</script>
+</body>
+</html>
