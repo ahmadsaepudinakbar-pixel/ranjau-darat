@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Surat &amp; Dokumen - CV. Ranjau Darat</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="css/dash.css">
+<link rel="stylesheet" href="css/pendaftaran.css">
+<link rel="stylesheet" href="css/surat.css">
+</head>
+<body>
+<p class="loading-page" id="loading">Memeriksa akun...</p>
+
+<div class="shell" id="app" hidden>
+  <aside class="side" id="side"></aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 id="judul">Surat &amp; Dokumen</h1>
+      <span class="tgl" id="tgl"></span>
+      <div class="chip" id="chip"></div>
+    </header>
+
+    <main class="content">
+      <section class="stats" aria-label="Ringkasan surat">
+        <div class="stat s-info">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a1 1 0 00-1 1v16a1 1 0 001 1h12a1 1 0 001-1V8z"/><path d="M14 3v5h5"/></svg></div>
+          <span class="lbl">Total Arsip</span><b data-stat="total">–</b><small>Seluruh surat tercatat</small>
+        </div>
+        <div class="stat s-ok">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+          <span class="lbl">Surat Masuk</span><b data-stat="masuk">–</b><small>Bulan ini</small>
+        </div>
+        <div class="stat s-warn">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+          <span class="lbl">Surat Keluar</span><b data-stat="keluar">–</b><small>Bulan ini</small>
+        </div>
+        <div class="stat s-bad">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.5l-8.5 8.5a5 5 0 01-7-7L14 5.5a3.3 3.3 0 014.7 4.7L10.2 18.7a1.7 1.7 0 01-2.4-2.4L15.5 8.6"/></svg></div>
+          <span class="lbl">Tanpa Lampiran</span><b data-stat="tanpa">–</b><small>Belum ada file scan</small>
+        </div>
+      </section>
+
+      <section class="card" id="arsipSurat"></section>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/sesi.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/surat.js"></script>
+<script>
+  wajibLogin(['sekretaris', 'ketua']).then((akun) => {
+    if (!akun) return;
+    const peran = akun.jabatan === 'ketua' ? 'ketua' : 'sekretaris';
+    pasangLayout({ peran, aktif: 'surat', judul: 'Surat & Dokumen', akun });
+    document.getElementById('loading').hidden = true;
+    document.getElementById('app').hidden = false;
+
+    mulaiSurat({
+      wadah: document.getElementById('arsipSurat'),
+      bolehUbah: ['sekretaris', 'admin'].includes(akun.jabatan),
+      saatData: (s) => ['total', 'masuk', 'keluar', 'tanpa'].forEach((k) => (document.querySelector('[data-stat="' + k + '"]').textContent = s[k]))
+    });
+  });
+</script>
+</body>
+</html>
