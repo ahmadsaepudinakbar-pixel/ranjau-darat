@@ -22,6 +22,24 @@ function htmlSlip(g) {
   '</div>';
 }
 
+// Ringkasan gaji satu periode (untuk kartu di dashboard Bendahara). periode = 'YYYY-MM'
+async function muatRingkasanGaji(periode) {
+  const [a, g] = await Promise.all([
+    sb.from('anggota').select('id').eq('jabatan', 'anggota').eq('status', 'diterima'),
+    sb.from('gaji').select('anggota_id, total').eq('periode', periode + '-01')
+  ]);
+  if (a.error || g.error) return { ok: false, error: a.error || g.error };
+  const sudah = new Set(g.data.map((x) => x.anggota_id));
+  return {
+    ok: true,
+    periode: namaPeriode(periode),
+    totalDibayar: g.data.reduce((t, x) => t + Number(x.total), 0),
+    jumlahSlip: g.data.length,
+    jumlahSatpam: a.data.length,
+    belum: a.data.filter((x) => !sudah.has(x.id)).length
+  };
+}
+
 // =====================================================================
 // BENDAHARA
 // =====================================================================

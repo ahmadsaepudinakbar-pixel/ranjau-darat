@@ -8,34 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="css/dash.css">
-<link rel="stylesheet" href="css/pendaftaran.css">
-<link rel="stylesheet" href="css/gaji.css">
 <link rel="stylesheet" href="css/keuangan.css">
-<style>
-  .profil{display:grid;grid-template-columns:200px minmax(0,1fr);gap:1.4rem;align-items:start}
-  .pf-foto{display:grid;gap:.6rem;justify-items:center;text-align:center}
-  .pf-foto .img{width:100%;max-width:200px;aspect-ratio:3/4;border-radius:12px;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);font-size:.85rem;overflow:hidden}
-  .pf-foto img{width:100%;height:100%;object-fit:cover;display:block}
-  .pf-foto b{font-family:var(--f-display);font-size:1.35rem;color:var(--navy-900);line-height:1.1}
-  .pf-foto small{color:var(--muted)}
-  .pf-data{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1.6rem;margin:0}
-  .pf-data div{display:grid;grid-template-columns:9rem 1fr;gap:.6rem;padding:.6rem 0;border-bottom:1px dashed var(--line)}
-  .pf-data dt{color:var(--muted)}
-  .pf-data dd{margin:0;font-weight:600;overflow-wrap:anywhere}
-  .note{margin:1rem 0 0;color:var(--muted);font-size:.9rem}
-  .segera{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
-  .segera .card{display:flex;gap:.9rem;align-items:center}
-  .segera .ic{width:44px;height:44px;border-radius:10px;background:var(--paper);color:var(--navy-700);display:grid;place-items:center;flex:none}
-  .segera .ic svg{width:22px;height:22px}
-  .segera h3{margin:0;font-family:var(--f-display);font-size:1.25rem;color:var(--navy-900)}
-  .segera p{margin:.1rem 0 0;color:var(--muted);font-size:.9rem}
-  @media (max-width:760px){
-    .profil{grid-template-columns:1fr}
-    .pf-data{grid-template-columns:1fr}
-    .pf-data div{grid-template-columns:8rem 1fr}
-    .segera{grid-template-columns:1fr}
-  }
-</style>
 </head>
 <body>
 <p class="loading-page" id="loading">Memeriksa akun...</p>
@@ -97,13 +70,6 @@
         </div>
       </section>
 
-      <section class="card" id="gaji"></section>
-
-      <a class="card link-card" href="keuangan.html">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg></div>
-        <div><h3>Transaksi Keuangan</h3><p>Catat pemasukan &amp; pengeluaran kas, lihat saldo.</p></div>
-        <span class="go">Buka →</span>
-      </a>
     </main>
   </div>
 </div>
@@ -117,25 +83,26 @@
 <script>
   wajibLogin(['bendahara']).then((akun) => {
     if (!akun) return;
-    pasangLayout({ peran: 'bendahara', aktif: location.hash === '#gaji' ? 'gaji' : 'dashboard', judul: 'Dashboard Bendahara', akun });
+    pasangLayout({ peran: 'bendahara', aktif: 'dashboard', judul: 'Dashboard Bendahara', akun });
     document.getElementById('nama').textContent = akun.nama;
     document.getElementById('loading').hidden = true;
     document.getElementById('app').hidden = false;
 
     const s = (k) => document.querySelector('[data-s="' + k + '"]');
-    mulaiGajiBendahara({
-      wadah: document.getElementById('gaji'),
-      bolehUbah: ['bendahara', 'admin'].includes(akun.jabatan),
-      saatData: (d) => {
-        s('total').textContent = fmtRp(d.totalDibayar);
-        s('periode').textContent = d.periode;
-        s('sudah').textContent = d.jumlahSlip;
-        s('dari').textContent = 'dari ' + d.jumlahSatpam + ' anggota aktif';
-        s('belum').textContent = d.belum;
-        s('rata').textContent = d.jumlahSlip ? fmtRp(Math.round(d.totalDibayar / d.jumlahSlip)) : 'Rp0';
-      }
-    });
     const k = (n) => document.querySelector('[data-k="' + n + '"]');
+
+    // Kartu gaji
+    muatRingkasanGaji(bulanIni()).then((d) => {
+      if (!d.ok) { s('periode').textContent = 'Gagal memuat'; return; }
+      s('total').textContent = fmtRp(d.totalDibayar);
+      s('periode').textContent = d.periode;
+      s('sudah').textContent = d.jumlahSlip;
+      s('dari').textContent = 'dari ' + d.jumlahSatpam + ' anggota aktif';
+      s('belum').textContent = d.belum;
+      s('rata').textContent = d.jumlahSlip ? fmtRp(Math.round(d.totalDibayar / d.jumlahSlip)) : 'Rp0';
+    });
+
+    // Kartu kas
     muatRingkasanKas(bulanIni()).then((r) => {
       if (!r.ok) { k('ketKeluar').textContent = 'Belum tersedia'; k('periode').textContent = 'Belum tersedia'; return; }
       k('saldo').textContent = fmtRp(r.saldo);
@@ -144,7 +111,6 @@
       k('periode').textContent = namaPeriode(bulanIni());
       k('ketKeluar').textContent = r.gaji ? 'Termasuk gaji ' + fmtRp(r.gaji) : namaPeriode(bulanIni());
     });
-    if (location.hash === '#gaji') document.getElementById('gaji').scrollIntoView();
   });
 </script>
 </body>

@@ -38,7 +38,7 @@ const MENU = {
   bendahara: [
     ['dashboard', 'Dashboard', 'bendahara.html'],
     ['keuangan', 'Keuangan', 'keuangan.html'],
-    ['gaji', 'Gaji Anggota', 'bendahara.html#gaji'],
+    ['gaji', 'Gaji Anggota', 'gaji.html'],
     ['laporan', 'Laporan Keuangan', 'laporan.html'],
     ['pengaturan', 'Pengaturan', 'pengaturan.html']
   ],

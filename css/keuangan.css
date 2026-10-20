@@ -30,3 +30,14 @@
 .link-card p{margin:.1rem 0 0;color:var(--muted);font-size:.9rem}
 .link-card .go{margin-left:auto;color:var(--gold-deep);font-weight:700;white-space:nowrap}
 .hint-sql{color:var(--warn);font-size:.85rem;font-weight:600}
+
+/* Kartu ringkasan KAS: gelap (navy & emas) supaya beda dari kartu GAJI yang berwarna terang */
+.stats.kas .stat{background:linear-gradient(160deg,var(--navy-800),var(--navy-950));border-color:var(--navy-700)}
+.stats.kas .stat .lbl{color:var(--on-navy-muted);text-transform:uppercase;letter-spacing:.06em;font-size:.76rem}
+.stats.kas .stat b{color:#fff}
+.stats.kas .stat small{color:var(--on-navy-muted)}
+.stats.kas .s-info .ic{background:var(--gold);color:var(--navy-900)}
+.stats.kas .s-ok .ic{background:#1f9d62}
+.stats.kas .s-bad .ic{background:#d24a3d}
+.stats.kas .s-info b{color:var(--gold)}
+.sec-judul{margin:0 0 -.55rem;font-family:var(--f-display);font-size:1.05rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
